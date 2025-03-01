@@ -1,0 +1,30 @@
+---
+select_t4hadrons: false
+
+skelana_flags:
+      IFLTRA: 1         # Track information
+      IFLODR: 1         # Reoder tracks
+      IFLVEC: 22        # VECP filling
+      IFLSTR: 11        # Track selection (LVLOCK filling)
+      IFLCUT: 3         # Track selection
+      IFLRVR: 111       # Recovery routine
+      IFLSIM: 1         # Simulation information filling                                         
+      IFLBSP: 2         # Beam spot                                            
+      IFLBTG: 2         # B-tagging
+      IFLPVT: 2         # Primary vertex
+      IFLVDR: 1         # refit VD with Z tracks with PV constraint
+      IFLFCT: 1         # refit FCA/FCB (RIF)  with PV constraint
+      IFLRNQ: 1         # Run quality selection
+      IFLBHP: 1         # Skip the bad 1997 HPC events
+      IFLUTE: 1         # Unassociated TE banks
+      IFLVDH: 1         # Vertex detector hits
+      IFLMUO: 1         # Muon identification
+      IFLECL: 2         # Electromagnetic cluster Information
+      IFLELE: 1         # ELEPHANT Electron identification
+      IFLEMC: 1         # Elm. calorimetry
+      IFLPHO: 1         # Photon/pi0 identification
+      IFLPHC: 1         # Converted photon
+      IFLHAC: 1         # Had. calorimetry
+      IFLHAD: 1         # Hadron identification
+      IFLRVO: 1         # V0 reconstruction
+      IFLJET: 1         # Jet reconstruction
