@@ -26,3 +26,5 @@ namespace phdst
         static Analysis *instance_;
     };
 };
+
+#endif // PHDST_ANALYSIS_HPP

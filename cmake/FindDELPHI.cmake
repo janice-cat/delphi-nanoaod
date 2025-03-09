@@ -10,9 +10,6 @@ cmake_minimum_required(VERSION 3.26)
 
 project(DELPHI VERSION 0.1 LANGUAGES Fortran CXX)
 
-include_directories(${CMAKE_SOURCE_DIR/../include})
-add_link_options("-lgfortran")
-
 # Wrapper for nypatchy, the DELPHI source code manager
 # 
 # Dependencies to CAR files can be added to the command
@@ -38,25 +35,25 @@ function(ypatchy FOUT CRA)
 endfunction()
 
 # Wrapper for the cernlib command that simplifies link options
-function(tarbet_link_cernlib TARGET)
+function(target_link_cernlibs TARGET)
 
     execute_process(
         COMMAND cernlib ${ARGN}
         OUTPUT_VARIABLE CERNLIBS
         OUTPUT_STRIP_TRAILING_WHITESPACE
         )
-    target_link_options(${TARGET} PRIVATE ${CERNLIBS})
+    target_link_libraries(${TARGET} ${CERNLIBS})
 
 endfunction()
 
 # Wrapper for the dellib command that simplifies link options
-function(target_link_dellib TARGET)
+function(target_link_dellibs TARGET)
 
     execute_process(
         COMMAND dellib ${ARGN}
         OUTPUT_VARIABLE DELLIBS
         OUTPUT_STRIP_TRAILING_WHITESPACE
         )
-    target_link_options(${TARGET} PRIVATE ${DELLIBS})
+    target_link_libraries(${TARGET} ${DELLIBS})
 
 endfunction()

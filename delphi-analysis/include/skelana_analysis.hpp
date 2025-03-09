@@ -5,6 +5,7 @@
 #include <string>
 
 #include "phdst_analysis.hpp"
+#include "skelana.hpp"
 
 namespace skelana
 {
@@ -17,10 +18,9 @@ namespace skelana
         Analysis &operator=(const Analysis &) = delete;
         virtual ~Analysis();
         static Analysis *getInstance();
-        void enableRunSelection();
-        void filterT4Hadrons();
+        void selectHadrons();
         void setOption(const std::string &option, int value);
-        void printSkelanaSettings(std::ostream &os;
+        void printSkelanaSettings(std::ostream &os);
     protected:
         Analysis();
         virtual void user00();
@@ -28,7 +28,11 @@ namespace skelana
         virtual void user02();
         virtual void user99();
     private:
-        bool filterT4Hadrons_;
+        bool checkHadron();
+        bool checkRecordType();
+        bool checkBadHPC();
+
+        bool selectHadrons_;
         inline static std::map<std::string, int*> optionMap_ =  {      
             {"IFLFIX", &pscflg_.iflfix},
             {"IFLRNQ", &pscflg_.iflrnq},
@@ -61,3 +65,5 @@ namespace skelana
         };
     };
 };
+
+#endif // SKELANA_ANALYSIS_HPP

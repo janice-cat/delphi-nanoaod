@@ -1,4 +1,4 @@
-#include  "phdst_analysis.hpp"
+#include "phdst_analysis.hpp"
 #include "phdst.hpp"
 
 namespace phdst
@@ -36,11 +36,11 @@ namespace phdst
 
     int Analysis::user01()
     {
-        if (this->maxEventsToProcess_ > 0 && NEVENT() >= this->maxEventsToProcess_)
+        if (maxEventsToProcess_ > 0 && NEVENT >= maxEventsToProcess_)
         {
             return -3;
         }
-        return 0;
+        return 1;
     }
 
     void Analysis::user02()

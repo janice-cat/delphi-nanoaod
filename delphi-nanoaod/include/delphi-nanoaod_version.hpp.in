@@ -1,0 +1,8 @@
+#ifndef DELPHI_NANOAOD_VERSION_HPP
+#define DELPHI_NANOAOD_VERSION_HPP
+
+#include <string>
+
+const std::string DELPHI_NANOAOD_VERSION("@VERSION@");
+
+#endif // DELPHI_NANOAOD_VERSION_HPP
