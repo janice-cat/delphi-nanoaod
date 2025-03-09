@@ -55,37 +55,39 @@ namespace skelana
 
     void Analysis::printSkelanaSettings(std::ostream &os)
     {
-        os << "Skelana flags:" << std::endl;
+        os << "\nSkelana flags:" << std::endl;
         for (const auto &it : optionMap_)
         {
-            os << it.first << " = " << *it.second << std::endl;
+            os << "   " << it.first << " = " << *it.second << std::endl;
         }
 
         if (IFLSTR > 0)
         {
-            os << "track selection cuts for this run:" << std::endl;
-            os << "TRKMOM = " << TRKMOM(IFLCUT) << std::endl;
-            os << "TRKMAX = " << TRKMAX(IFLCUT) << std::endl;
-            os << "TRKERR = " << TRKERR(IFLCUT) << std::endl;
-            os << "TRKRPH = " << TRKRPH(IFLCUT) << std::endl;
-            os << "TRKZET = " << TRKZET(IFLCUT) << std::endl;
-            os << "TRKLEN = " << TRKLEN(IFLCUT) << std::endl;
-            os << "TRCCOS = " << TRCCOS(IFLCUT) << std::endl;
-            os << "VDONLY = " << VDONLY(IFLCUT) << std::endl;
-            os << "IDVDWZ = " << IDVDWZ(IFLCUT) << std::endl;
-            os << "IHADRJ = " << IHADRJ(IFLCUT) << std::endl;
-            os << "ISTOEL = " << ISTOEL(IFLCUT) << std::endl;
-            os << "EHPC   = " << EHPC(IFLCUT) << std::endl;
-            os << "EFEMC  = " << EFEMC(IFLCUT) << std::endl;
-            os << "EHAC   = " << EHAC(IFLCUT) << std::endl;
-            os << "ESTIC  = " << ESTIC(IFLCUT) << std::endl;
-            os << "TRNCOS = " << TRNCOS(IFLCUT) << std::endl;
-            os << "RECCAL = " << RECCAL(IFLCUT) << std::endl;
+            os << "\nTrack selection cuts for this run:" << std::endl;
+            os << "   TRKMOM = " << TRKMOM(IFLCUT) << std::endl;
+            os << "   TRKMAX = " << TRKMAX(IFLCUT) << std::endl;
+            os << "   TRKERR = " << TRKERR(IFLCUT) << std::endl;
+            os << "   TRKRPH = " << TRKRPH(IFLCUT) << std::endl;
+            os << "   TRKZET = " << TRKZET(IFLCUT) << std::endl;
+            os << "   TRKLEN = " << TRKLEN(IFLCUT) << std::endl;
+            os << "   TRCCOS = " << TRCCOS(IFLCUT) << std::endl;
+            os << "   VDONLY = " << VDONLY(IFLCUT) << std::endl;
+            os << "   IDVDWZ = " << IDVDWZ(IFLCUT) << std::endl;
+            os << "   IHADRJ = " << IHADRJ(IFLCUT) << std::endl;
+            os << "   ISTOEL = " << ISTOEL(IFLCUT) << std::endl;
+            os << "   EHPC   = " << EHPC(IFLCUT) << std::endl;
+            os << "   EFEMC  = " << EFEMC(IFLCUT) << std::endl;
+            os << "   EHAC   = " << EHAC(IFLCUT) << std::endl;
+            os << "   ESTIC  = " << ESTIC(IFLCUT) << std::endl;
+            os << "   TRNCOS = " << TRNCOS(IFLCUT) << std::endl;
+            os << "   RECCAL = " << RECCAL(IFLCUT) << std::endl;
         }
     }
 
     void Analysis::user00()
     {
+        std::cout << "Skelana::Analysis::user00: Initialising"  << std::endl;
+
         // Supress floating point errors
         phdst::PHSET("FPE", 0);
         // Skelana initialization
@@ -121,6 +123,7 @@ namespace skelana
 
     int Analysis::user01()
     {
+        std::cout << "Skelana::Analysis::user01: Processing pilot " << phdst::NEVENT+1 << std::endl;
         if (int need = super::user01(); need < 1)
         {
             return need;
@@ -185,10 +188,12 @@ namespace skelana
 
     void Analysis::user02()
     {
+        std::cout << "Skelana::Analysis::user02: Processing event " << phdst::NEVENT+1 << std::endl;
         PSBEG();
     }
 
     void Analysis::user99()
     {
+        std::cout << "Skelana::Analysis::user99: Terminating"  << std::endl;
     }
 };

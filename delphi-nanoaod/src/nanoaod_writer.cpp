@@ -5,8 +5,8 @@ template <typename T>
 std::shared_ptr<std::vector<T>> makeVector(int i, int n, std::function<T(int)> f)
 {
     auto v = std::make_shared<std::vector<T>>();
-    std::generate_n(std::back_inserter(*v), n, [i, f]() mutable
-                    { return f(i++); });
+    // std::generate_n(std::back_inserter(*v), n, [i, f]() mutable
+    //                 { return f(i++); });
     return v;
 };
 
@@ -35,6 +35,8 @@ void NanoAODWriter::setMC()
 
 void NanoAODWriter::user00()
 {
+    std::cout << "NanoAODWriter::user00: Initialising" << std::endl;
+    super::user00();
 
     auto model = RNTupleModel::Create();
     // Event_nrun_ = model->MakeField<int>("Event_nrun", "Run number");
@@ -67,6 +69,25 @@ void NanoAODWriter::user00()
     Event_totalHadEnergy_ = model->MakeField<float>("Event_totalHadEnergy");
     Event_DSTType_ = model->MakeField<std::string>("Event_DSTType");
 
+    nPart_ = model->MakeField<int>("nPart");
+    Part_px_ = model->MakeField<std::vector<float>>("Part_px");
+    Part_py_ = model->MakeField<std::vector<float>>("Part_py");
+    Part_pz_ = model->MakeField<std::vector<float>>("Part_pz");
+    Part_energy_ = model->MakeField<std::vector<float>>("Part_energy");
+    Part_mass_ = model->MakeField<std::vector<float>>("Part_mass");
+    Part_p_ = model->MakeField<std::vector<float>>("Part_p");
+    Part_charge_ = model->MakeField<std::vector<float>>("Part_charge");
+    Part_pdgId_ = model->MakeField<std::vector<float>>("Part_pdgId");
+    Part_massid_ = model->MakeField<std::vector<int>>("Part_massid");
+    Part_jetnr_ = model->MakeField<std::vector<int>>("Part_jetnr");
+    Part_lock_ = model->MakeField<std::vector<int>>("Part_lock");
+    if (mc_)
+    {
+        Part_simIdx_ = model->MakeField<std::vector<int>>("Part_simIdx");
+        Part_originVtxIdx_ = model->MakeField<std::vector<int>>("Part_originVtxIdx");
+        Part_decayVtxIdx_ = model->MakeField<std::vector<int>>("Part_decayVtxIdx");
+    }
+
     // nPart_ = model->MakeField<int>("nPart", "Number of particles");
     // Part_px_ = model->MakeField<std::vector<float>>("Part_px", "Particle x-momentum");
     // Part_py_ = model->MakeField<std::vector<float>>("Part_py", "Particle y-momentum");
@@ -86,6 +107,15 @@ void NanoAODWriter::user00()
     //     Part_decayVtxIdx_ = model->MakeField<std::vector<int>>("Part_decayVtxIdx", "Particle decay vertex index");
     // }
 
+    nJet_ = model->MakeField<int>("nJet");
+    Jet_px_ = model->MakeField<std::vector<float>>("Jet_px");
+    Jet_py_ = model->MakeField<std::vector<float>>("Jet_py");
+    Jet_pz_ = model->MakeField<std::vector<float>>("Jet_pz");
+    Jet_energy_ = model->MakeField<std::vector<float>>("Jet_energy");
+    Jet_mass_ = model->MakeField<std::vector<float>>("Jet_mass");
+    Jet_p_ = model->MakeField<std::vector<float>>("Jet_p");
+    Jet_charge_ = model->MakeField<std::vector<float>>("Jet_charge");
+
     // nJet_ = model->MakeField<int>("nJet", "Number of jets");
     // Jet_px_ = model->MakeField<std::vector<float>>("Jet_px", "Jet x-momentum");
     // Jet_py_ = model->MakeField<std::vector<float>>("Jet_py", "Jet y-momentum");
@@ -95,15 +125,43 @@ void NanoAODWriter::user00()
     // Jet_p_ = model->MakeField<std::vector<float>>("Jet_p", "Jet momentum");
     // Jet_charge_ = model->MakeField<std::vector<float>>("Jet_charge", "Jet charge");
 
+    Thrust_x_ = model->MakeField<std::vector<float>>("Thrust_x");
+    Thrust_y_ = model->MakeField<std::vector<float>>("Thrust_y");
+    Thrust_z_ = model->MakeField<std::vector<float>>("Thrust_z");
+    Thrust_norm_ = model->MakeField<std::vector<float>>("Thrust_norm");
+
     // Thrust_x_ = model->MakeField<std::vector<float>>("Thrust_x", "Thrust x-component");
     // Thrust_y_ = model->MakeField<std::vector<float>>("Thrust_y", "Thrust y-component");
     // Thrust_z_ = model->MakeField<std::vector<float>>("Thrust_z", "Thrust z-component");
     // Thrust_norm_ = model->MakeField<std::vector<float>>("Thrust_norm", "Thrust norm");
 
+    Sphericity_x_ = model->MakeField<std::vector<float>>("Sphericity_x");
+    Sphericity_y_ = model->MakeField<std::vector<float>>("Sphericity_y");
+    Sphericity_z_ = model->MakeField<std::vector<float>>("Sphericity_z");
+    Sphericity_norm_ = model->MakeField<std::vector<float>>("Sphericity_norm");
+
     // Sphericity_x_ = model->MakeField<std::vector<float>>("Sphericity_x", "Sphericity x-component");
     // Sphericity_y_ = model->MakeField<std::vector<float>>("Sphericity_y", "Sphericity y-component");
     // Sphericity_z_ = model->MakeField<std::vector<float>>("Sphericity_z", "Sphericity z-component");
     // Sphericity_norm_ = model->MakeField<std::vector<float>>("Sphericity_norm", "Sphericity norm");
+
+    nVtx_ = model->MakeField<int>("nVtx");
+    Vtx_firstOutIdx_ = model->MakeField<std::vector<int>>("Vtx_firstOutIdx");
+    Vtx_firstInIdx_ = model->MakeField<std::vector<int>>("Vtx_firstInIdx");
+    Vtx_nOut_ = model->MakeField<std::vector<int>>("Vtx_nOut");
+    Vtx_ndf_ = model->MakeField<std::vector<int>>("Vtx_ndf");
+    Vtx_mcode_ = model->MakeField<std::vector<int>>("Vtx_mcode");
+    Vtx_x_ = model->MakeField<std::vector<float>>("Vtx_x");
+    Vtx_y_ = model->MakeField<std::vector<float>>("Vtx_y");
+    Vtx_z_ = model->MakeField<std::vector<float>>("Vtx_z");
+    Vtx_errXX_ = model->MakeField<std::vector<float>>("Vtx_errXX");
+    Vtx_errXY_ = model->MakeField<std::vector<float>>("Vtx_errXY");
+    Vtx_errYY_ = model->MakeField<std::vector<float>>("Vtx_errYY");
+    Vtx_errXZ_ = model->MakeField<std::vector<float>>("Vtx_errXZ");
+    Vtx_errYZ_ = model->MakeField<std::vector<float>>("Vtx_errYZ");
+    Vtx_errZZ_ = model->MakeField<std::vector<float>>("Vtx_errZZ");
+    Vtx_errorFlag_ = model->MakeField<std::vector<int>>("Vtx_errorFlag");
+    Vtx_status_ = model->MakeField<std::vector<int>>("Vtx_status");
 
     // nVtx_ = model->MakeField<int>("nVtx", "Number of vertices");
     // Vtx_firstOutIdx_ = model->MakeField<std::vector<int>>("Vtx_firstOutIdx", "Vertex first outgoing particle index");
@@ -123,6 +181,50 @@ void NanoAODWriter::user00()
     // Vtx_errZZ_ = model->MakeField<std::vector<float>>("Vtx_errZZ", "Vertex error zz");
     // Vtx_errorFlag_ = model->MakeField<std::vector<int>>("Vtx_errorFlag", "Vertex error flag");
     // Vtx_status_ = model->MakeField<std::vector<int>>("Vtx_status", "Vertex status");
+
+    if (mc_)
+    {
+        nSimPart_ = model->MakeField<int>("nSimPart");
+        SimPart_px_ = model->MakeField<std::vector<float>>("SimPart_px");
+        SimPart_py_ = model->MakeField<std::vector<float>>("SimPart_py");
+        SimPart_pz_ = model->MakeField<std::vector<float>>("SimPart_pz");
+        SimPart_energy_ = model->MakeField<std::vector<float>>("SimPart_energy");
+        SimPart_mass_ = model->MakeField<std::vector<float>>("SimPart_mass");
+        SimPart_pdgId_ = model->MakeField<std::vector<float>>("SimPart_pdgId");
+        SimPart_partIdx_ = model->MakeField<std::vector<int>>("SimPart_partIdx");
+        SimPart_genIdx_ = model->MakeField<std::vector<int>>("SimPart_genIdx");
+        SimPart_originVtxIdx_ = model->MakeField<std::vector<int>>("SimPart_originVtxIdx");
+        SimPart_decayVtxIdx_ = model->MakeField<std::vector<int>>("SimPart_decayVtxIdx");
+
+        nGenPart_ = model->MakeField<int>("nGenPart");
+        GenPart_status_ = model->MakeField<std::vector<int>>("GenPart_status");
+        GenPart_pdgId_ = model->MakeField<std::vector<int>>("GenPart_pdgId");
+        GenPart_parentIdx_ = model->MakeField<std::vector<int>>("GenPart_parentIdx");
+        GenPart_firstChildIdx_ = model->MakeField<std::vector<int>>("GenPart_firstChildIdx");
+        GenPart_lastChildIdx_ = model->MakeField<std::vector<int>>("GenPart_lastChildIdx");
+        GenPart_px_ = model->MakeField<std::vector<float>>("GenPart_px");
+        GenPart_py_ = model->MakeField<std::vector<float>>("GenPart_py");
+        GenPart_pz_ = model->MakeField<std::vector<float>>("GenPart_pz");
+        GenPart_energy_ = model->MakeField<std::vector<float>>("GenPart_energy");
+        GenPart_mass_ = model->MakeField<std::vector<float>>("GenPart_mass");
+        GenPart_vx_ = model->MakeField<std::vector<float>>("GenPart_vx");
+        GenPart_vy_ = model->MakeField<std::vector<float>>("GenPart_vy");
+        GenPart_vz_ = model->MakeField<std::vector<float>>("GenPart_vz");
+        GenPart_vt_ = model->MakeField<std::vector<float>>("GenPart_vt");
+        GenPart_tau_ = model->MakeField<std::vector<float>>("GenPart_tau");
+        GenPart_simIdx_ = model->MakeField<std::vector<float>>("GenPart_simIdx");
+
+        nSimVtx_ = model->MakeField<int>("nSimVtx");
+        SimVtx_firstOutIdx_ = model->MakeField<std::vector<int>>("SimVtx_firstOutIdx");
+        SimVtx_firstInIdx_ = model->MakeField<std::vector<int>>("SimVtx_firstInIdx");
+        SimVtx_nOut_ = model->MakeField<std::vector<int>>("SimVtx_nOut");
+        SimVtx_mcode_ = model->MakeField<std::vector<int>>("SimVtx_mcode");
+        SimVtx_x_ = model->MakeField<std::vector<float>>("SimVtx_x");
+        SimVtx_y_ = model->MakeField<std::vector<float>>("SimVtx_y");
+        SimVtx_z_ = model->MakeField<std::vector<float>>("SimVtx_z");
+        SimVtx_errorFlag_ = model->MakeField<std::vector<int>>("SimVtx_errorFlag");
+        SimVtx_status_ = model->MakeField<std::vector<int>>("SimVtx_status");
+    }
 
     // if (mc_)
     // {
@@ -168,17 +270,19 @@ void NanoAODWriter::user00()
     //     SimVtx_status_ = model->MakeField<std::vector<int>>("SimVtx_status", "Simulated vertex status");
     // }
 
-    // writer_ = RNTupleWriter::Recreate(std::move(model), "Events", output_.string());
+    writer_ = RNTupleWriter::Recreate(std::move(model), "Events", output_.string());
 };
 
 int NanoAODWriter::user01()
 {
+    std::cout << "NanoAODWriter::user01: Processing pilot " << phdst::NEVENT + 1 << std::endl;
     return super::user01();
 };
 
 void NanoAODWriter::user02()
 {
-
+    std::cout << "NanoAODWriter::user02: Processing event " << phdst::NEVENT + 1 << std::endl;
+    super::user02();
     *Event_nrun_ = phdst::IIIRUN;
     *Event_ievt_ = phdst::IIIEVT;
     *Event_fill_ = phdst::IIFILL;
@@ -195,56 +299,190 @@ void NanoAODWriter::user02()
     *Event_DSTType_ = sk::CDTYPE();
 
     *nPart_ = sk::NVECP;
-    // Part_px_ = makeVector<float>(sk::LVPART, sk::NVECP, [](int i)
-    //                              { return sk::VECP(1, i); });
-    // Part_py_ = makeVector<float>(sk::LVPART, sk::NVECP, [](int i)
-    //                              { return sk::VECP(2, i); });
-    // Part_pz_ = makeVector<float>(sk::LVPART, sk::NVECP, [](int i)
-    //                              { return sk::VECP(3, i); });
-    // Part_energy_ = makeVector<float>(sk::LVPART, sk::NVECP, [](int i)
-    //                      { return sk::VECP(4, i); });
-    // Part_mass_ = makeVector<float>(sk::LVPART, sk::NVECP, [](int i)
-    //                      { return sk::VECP(5, i); });
-    // Part_mass_ = makeVector<float>(sk::LVPART, sk::NVECP, [](int i)
-    //                      { return sk::VECP(6, i); });
-    // Part_charge_ = makeVector<float>(sk::LVPART, sk::NVECP, [](int i)
-    //                      { return sk::VECP(7, i); });
-    // Part_pdgId_ = makeVector<float>(sk::LVPART, sk::NVECP, [](int i)
-    //                      { return sk::VECP(8, i); });
-    // Part_massid_ = makeVector<int>(sk::LVPART, sk::NVECP, [](int i)
-    //                      { return sk::VECP(9, i); });
-    // Part_jetnr_= makeVector<int>(sk::LVPART, sk::NVECP, [](int i)
-    //                      { return sk::VECP(10, i); });
-    // Part_lock_ = makeVector<int>(sk::LVPART, sk::NVECP, [](int i)
-    //                      { return sk::LVLOCK(i); });
-    // // if (mc_)
-    // {
-    //     Part_simIdx_ = makeVector<int>(sk::LVPART, sk::NVECP, [](int i)
-    //                                   { return sk::IPAST(i); });
-    //     Part_originVtxIdx_ = makeVector<int>(sk::LVPART, sk::NVECP, [](int i)
-    //                                   { return sk::IPAPV(1,i); });
-    //     Part_decayVtxIdx_ = makeVector<int>(sk::LVPART, sk::NVECP, [](int i)
-    //                                   { return sk::IPAPV(2,i); });
-    // }
+    Part_px_ = makeVector<float>(sk::LVPART, sk::NVECP, [](int i)
+                                 { return sk::VECP(1, i); });
+    Part_py_ = makeVector<float>(sk::LVPART, sk::NVECP, [](int i)
+                                 { return sk::VECP(2, i); });
+    Part_pz_ = makeVector<float>(sk::LVPART, sk::NVECP, [](int i)
+                                 { return sk::VECP(3, i); });
+    Part_energy_ = makeVector<float>(sk::LVPART, sk::NVECP, [](int i)
+                                     { return sk::VECP(4, i); });
+    Part_mass_ = makeVector<float>(sk::LVPART, sk::NVECP, [](int i)
+                                   { return sk::VECP(5, i); });
+    Part_mass_ = makeVector<float>(sk::LVPART, sk::NVECP, [](int i)
+                                   { return sk::VECP(6, i); });
+    Part_charge_ = makeVector<float>(sk::LVPART, sk::NVECP, [](int i)
+                                     { return sk::VECP(7, i); });
+    Part_pdgId_ = makeVector<float>(sk::LVPART, sk::NVECP, [](int i)
+                                    { return sk::VECP(8, i); });
+    Part_massid_ = makeVector<int>(sk::LVPART, sk::NVECP, [](int i)
+                                   { return sk::VECP(9, i); });
+    Part_jetnr_ = makeVector<int>(sk::LVPART, sk::NVECP, [](int i)
+                                  { return sk::VECP(10, i); });
+    Part_lock_ = makeVector<int>(sk::LVPART, sk::NVECP, [](int i)
+                                 { return sk::LVLOCK(i); });
+    if (mc_)
+    {
+        Part_simIdx_ = makeVector<int>(sk::LVPART, sk::NVECP, [](int i)
+                                       { return sk::IPAST(i) - 1; });
+        Part_originVtxIdx_ = makeVector<int>(sk::LVPART, sk::NVECP, [](int i)
+                                             { return sk::IPAPV(1, i) - 1; });
+        Part_decayVtxIdx_ = makeVector<int>(sk::LVPART, sk::NVECP, [](int i)
+                                            { return sk::IPAPV(2, i) - 1; });
+    }
+
     *nJet_ = sk::NJET;
-    // Jet_px_ = makeVector<float>(sk::LVJET, sk::NJET, [](int i)
-    //                             { return sk::VECP(1, i); });
-    // Jet_py_ = makeVector<float>(sk::LVJET, sk::NJET, [](int i)
-    //                             { return sk::VECP(2, i); });
-    // Jet_pz_ = makeVector<float>(sk::LVJET, sk::NJET, [](int i)
-    //                             { return sk::VECP(3, i); });
-    // Jet_energy_ = makeVector<float>(sk::LVJET, sk::NJET, [](int i)
-    //                                 { return sk::VECP(4, i); });
-    // Jet_mass_ = makeVector<float>(sk::LVJET, sk::NJET, [](int i)
-    //                               { return sk::VECP(5, i); });
-    // Jet_charge_ = makeVector<float>(sk::LVJET, sk::NJET, [](int i)
-    //                                { return sk::VECP(6, i); });
+    Jet_px_ = makeVector<float>(sk::LVJET, sk::NJET, [](int i)
+                                { return sk::VECP(1, i); });
+    Jet_py_ = makeVector<float>(sk::LVJET, sk::NJET, [](int i)
+                                { return sk::VECP(2, i); });
+    Jet_pz_ = makeVector<float>(sk::LVJET, sk::NJET, [](int i)
+                                { return sk::VECP(3, i); });
+    Jet_energy_ = makeVector<float>(sk::LVJET, sk::NJET, [](int i)
+                                    { return sk::VECP(4, i); });
+    Jet_mass_ = makeVector<float>(sk::LVJET, sk::NJET, [](int i)
+                                  { return sk::VECP(5, i); });
+    Jet_charge_ = makeVector<float>(sk::LVJET, sk::NJET, [](int i)
+                                    { return sk::VECP(6, i); });
+
+    Thrust_x_ = makeVector<float>(sk::LVTHRU, 3, [](int i)
+                                  { return sk::VECP(1, i); });
+    Thrust_y_ = makeVector<float>(sk::LVTHRU, 3, [](int i)
+                                  { return sk::VECP(2, i); });
+    Thrust_z_ = makeVector<float>(sk::LVTHRU, 3, [](int i)
+                                  { return sk::VECP(3, 1); });
+    Thrust_norm_ = makeVector<float>(sk::LVTHRU, 3, [](int i)
+                                     { return sk::VECP(4, i); });
+
+    Sphericity_x_ = makeVector<float>(sk::LVSPHE, 3, [](int i)
+                                      { return sk::VECP(1, i); });
+    Sphericity_y_ = makeVector<float>(sk::LVSPHE, 3, [](int i)
+                                      { return sk::VECP(2, i); });
+    Sphericity_z_ = makeVector<float>(sk::LVSPHE, 3, [](int i)
+                                      { return sk::VECP(3, i); });
+    Sphericity_norm_ = makeVector<float>(sk::LVSPHE, 3, [](int i)
+                                         { return sk::VECP(4, i); });
 
 
+    *nVtx_   = sk::NVTX;
+    Vtx_firstOutIdx_ = makeVector<int>(1, sk::NVTX, [](int i)
+                                      { return sk::KVTX(1, i); });
+    Vtx_firstInIdx_ = makeVector<int>(1, sk::NVTX, [](int i)
+                                    { return sk::KVTX(2, i); });
+    Vtx_nOut_ = makeVector<int>(1, sk::NVTX, [](int i)
+                              { return sk::KVTX(3, i); });
+    Vtx_ndf_ = makeVector<int>(1, sk::NVTX, [](int i)
+                            { return sk::KVTX(4, i); });
+    Vtx_mcode_ = makeVector<int>(1, sk::NVTX, [](int i)
+                              { return sk::KVTX(5, i); });
+    Vtx_x_ = makeVector<float>(1, sk::NVTX, [](int i)
+                            { return sk::KVTX(6, i); });
+    Vtx_y_ = makeVector<float>(1, sk::NVTX, [](int i)
+                            { return sk::KVTX(7, i); });
+    Vtx_z_ = makeVector<float>(1, sk::NVTX, [](int i)
+                            { return sk::KVTX(8, i); });
+    Vtx_errXX_ = makeVector<float>(1, sk::NVTX, [](int i)
+                                { return sk::KVTX(9, i); });
+    Vtx_errXY_ = makeVector<float>(1, sk::NVTX, [](int i)
+                                { return sk::KVTX(10, i); });
+    Vtx_errYY_ = makeVector<float>(1, sk::NVTX, [](int i)
+                                { return sk::KVTX(11, i); });
+    Vtx_errXZ_ = makeVector<float>(1, sk::NVTX, [](int i)
+                                { return sk::KVTX(12, i); });
+    Vtx_errYZ_ = makeVector<float>(1, sk::NVTX, [](int i)
+                                { return sk::KVTX(13, i); });
+    Vtx_errZZ_ = makeVector<float>(1, sk::NVTX, [](int i)
+                                { return sk::KVTX(14, i); });
+    Vtx_errorFlag_ = makeVector<int>(1, sk::NVTX, [](int i)
+                                  { return sk::KVTX(15, i); });
+    Vtx_status_ = makeVector<int>(1, sk::NVTX, [](int i)
+                              { return sk::KVTX(16, i); }); 
+                              
+    if (mc_)
+    {
+        *nSimPart_ = sk::NVECMC;
+        SimPart_px_ = makeVector<float>(sk::MTRACK + sk::LVPART, sk::NVECMC, [](int i)
+                                        { return sk::VECP(1, i); });
+        SimPart_py_ = makeVector<float>(sk::MTRACK + sk::LVPART, sk::NVECMC, [](int i)
+                                        { return sk::VECP(2, i); });
+        SimPart_pz_ = makeVector<float>(sk::MTRACK + sk::LVPART, sk::NVECMC, [](int i)
+                                        { return sk::VECP(3, i); });
+        SimPart_energy_ = makeVector<float>(sk::MTRACK + sk::LVPART, sk::NVECMC, [](int i)
+                                            { return sk::VECP(4, i); });
+        SimPart_mass_ = makeVector<float>(sk::MTRACK + sk::LVPART, sk::NVECMC, [](int i)    
+                                          { return sk::VECP(5, i); });
+        SimPart_pdgId_ = makeVector<float>(sk::MTRACK + sk::LVPART, sk::NVECMC, [](int i)
+                                          { return sk::VECP(6, i); });
+        SimPart_partIdx_ = makeVector<int>(sk::MTRACK + sk::LVPART, sk::NVECMC, [](int i)
+                                          { return sk::ISTPA(i)-1; });
+        SimPart_genIdx_ = makeVector<int>(sk::MTRACK + sk::LVPART, sk::NVECMC, [](int i)
+                                         { return sk::ISTLU(i)-1; });   
+        SimPart_originVtxIdx_ = makeVector<int>(sk::MTRACK + sk::LVPART, sk::NVECMC, [](int i)
+                                              { return sk::ISTVX(1,i) - 1; });
+        SimPart_decayVtxIdx_ = makeVector<int>(sk::MTRACK + sk::LVPART, sk::NVECMC, [](int i)
+                                             { return sk::ISTVX(2, i) - 1; });  
+
+        *nGenPart_ = sk::NP;
+        GenPart_status_ = makeVector<int>(1, sk::NP, [](int i)
+                                        { return sk::KP(i,1); });
+        GenPart_pdgId_ = makeVector<int>(1, sk::NP, [](int i)
+                                      { return sk::KP(i,2); });
+        GenPart_parentIdx_ = makeVector<int>(1, sk::NP, [](int i)
+                                          { return sk::KP(i,3); });
+        GenPart_firstChildIdx_ = makeVector<int>(1, sk::NP, [](int i)
+                                              { return sk::KP(i,4); });
+        GenPart_lastChildIdx_ = makeVector<int>(1, sk::NP, [](int i)
+                                                { return sk::KP(i,5); });
+        GenPart_px_ = makeVector<float>(1, sk::NP, [](int i)    
+                                      { return sk::PP(i,1); });
+        GenPart_py_ = makeVector<float>(1, sk::NP, [](int i)
+                                      { return sk::PP(i,2); });
+        GenPart_pz_ = makeVector<float>(1, sk::NP, [](int i)
+                                      { return sk::PP(i,3); });
+        GenPart_energy_ = makeVector<float>(1, sk::NP, [](int i)
+                                          { return sk::PP(i,4); });
+        GenPart_mass_ = makeVector<float>(1, sk::NP, [](int i)
+                                        { return sk::PP(i,5); });
+        GenPart_vx_ = makeVector<float>(1, sk::NP, [](int i)
+                                    { return sk::VP(i,1); });
+        GenPart_vy_ = makeVector<float>(1, sk::NP, [](int i)
+                                    { return sk::VP(i,2); });
+        GenPart_vz_ = makeVector<float>(1, sk::NP, [](int i)
+                                    { return sk::VP(i,3); });   
+        GenPart_vt_ = makeVector<float>(1, sk::NP, [](int i)
+                                    { return sk::VP(i,4); });
+        GenPart_tau_ = makeVector<float>(1, sk::NP, [](int i)
+                                    { return sk::VP(i,5); });
+        GenPart_simIdx_ = makeVector<float>(1, sk::NP, [](int i)
+                                        { return sk::ILUST(i)-1; });
+
+        *nSimVtx_ = sk::NVTXMC;
+        SimVtx_firstOutIdx_ = makeVector<int>(sk::NVTXMX+1, sk::NVTXMC, [](int i)
+                                            { return sk::KVTX(1, i)-1; });
+        SimVtx_firstInIdx_ = makeVector<int>(sk::NVTXMX+1, sk::NVTXMC, [](int i)
+                                          { return sk::KVTX(2, i)-1; });
+        SimVtx_nOut_ = makeVector<int>(sk::NVTXMX+1, sk::NVTXMC, [](int i)
+                                    { return sk::KVTX(3, i); });
+        SimVtx_mcode_ = makeVector<int>(sk::NVTXMX+1, sk::NVTXMC, [](int i)
+                                    { return sk::KVTX(4, i); });
+        SimVtx_x_ = makeVector<float>(sk::NVTXMX+1, sk::NVTXMC, [](int i)
+                                    { return sk::QVTX(1, i); });
+        SimVtx_y_ = makeVector<float>(sk::NVTXMX+1, sk::NVTXMC, [](int i)
+                                    { return sk::QVTX(2, i); });
+        SimVtx_z_ = makeVector<float>(sk::NVTXMX+1, sk::NVTXMC, [](int i)
+                                    { return sk::QVTX(3, i); });
+        SimVtx_errorFlag_ = makeVector<int>(sk::NVTXMX+1, sk::NVTXMC, [](int i)
+                                        { return sk::KVTX(16, i); });
+        SimVtx_status_ = makeVector<int>(sk::NVTXMX+1, sk::NVTXMC, [](int i)
+                                    { return sk::KVTX(17, i); });
+        
+    }
 
     writer_->Fill();
 };
 
 void NanoAODWriter::user99()
 {
+    std::cout << "NanoAODWriter::user99: Finalising" << std::endl;
+    writer_.reset();
 };

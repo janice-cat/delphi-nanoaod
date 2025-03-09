@@ -1,5 +1,6 @@
 #include "phdst_analysis.hpp"
 #include "phdst.hpp"
+#include <iostream>
 
 namespace phdst
 {
@@ -32,12 +33,15 @@ namespace phdst
 
     void Analysis::user00()
     {
+        std::cout << "PHDST::Analysis::user00: Initialising" << std::endl;
     }
 
     int Analysis::user01()
     {
+        std::cout << "PHDST::Analysis::user01: Processing pilot " << NEVENT+1 << std::endl;
         if (maxEventsToProcess_ > 0 && NEVENT >= maxEventsToProcess_)
         {
+            std::cout << "PHDST::Analysis::user01: Reached maximum number of events" << std::endl;
             return -3;
         }
         return 1;
@@ -45,9 +49,31 @@ namespace phdst
 
     void Analysis::user02()
     {
+        std::cout << "PHDST::Analysis::user02: Processing event " << NEVENT+1 << std::endl;
     }
 
     void Analysis::user99()
     {
+        std::cout << "PHDST::Analysis::user99: Terminating" << std::endl;
     }
+}
+
+void user00_()
+{
+    phdst::Analysis::getInstance()->user00();
+}
+
+void user01_(int *need)
+{
+    *need = phdst::Analysis::getInstance()->user01();
+}
+
+void user02_()
+{
+    phdst::Analysis::getInstance()->user02();
+}
+
+void user99_()
+{
+    phdst::Analysis::getInstance()->user99();
 }
