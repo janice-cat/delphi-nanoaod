@@ -39,7 +39,7 @@ namespace phdst
     int Analysis::user01()
     {
         std::cout << "PHDST::Analysis::user01: Processing pilot " << NEVENT+1 << std::endl;
-        if (maxEventsToProcess_ > 0 && NEVENT >= maxEventsToProcess_)
+        if (maxEventsToProcess_ > 0 && NEVENT > maxEventsToProcess_)
         {
             std::cout << "PHDST::Analysis::user01: Reached maximum number of events" << std::endl;
             return -3;

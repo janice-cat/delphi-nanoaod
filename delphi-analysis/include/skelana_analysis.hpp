@@ -33,7 +33,8 @@ namespace skelana
         bool checkBadHPC();
 
         bool selectHadrons_;
-        inline static std::map<std::string, int*> optionMap_ =  {      
+        inline static std::map<std::string, int*> optionMap_ =  {  
+            {"IFLTRA", &pscflg_.ifltra},    
             {"IFLFIX", &pscflg_.iflfix},
             {"IFLRNQ", &pscflg_.iflrnq},
             {"IFLSTR", &pscflg_.iflstr},

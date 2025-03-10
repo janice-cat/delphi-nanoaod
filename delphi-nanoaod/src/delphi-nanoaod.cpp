@@ -20,23 +20,24 @@ void configure_parser(argparse::ArgumentParser &program)
       .help("Path to the pdl input file");
 
   program.add_argument("-C", "--config")
-      .help("Path to the yaml configuration file")
       .metavar("FILE")
-      .default_value(std::string("delphi-nanoaod.yaml"));
+      .help("Path to the yaml configuration file")
+      .required();
+  
+  program.add_argument("-O", "--output")
+      .metavar("FILE")
+      .help("Output file name")
+      .required();
 
   program.add_argument("-m", "--max-events")
-      .help("Maximum number of events to process")
       .metavar("N")
+      .help("Maximum number of events to process")
       .scan<'i', int>();
 
   program.add_argument("--mc")
       .help("Write simulation information")
       .flag();
 
-  program.add_argument("-O", "--output")
-      .help("Output file name")
-      .metavar("FILE")
-      .default_value(std::string("delphi-nanoaod.root"));
 }
 
 int create_pdlinput(const argparse::ArgumentParser &program)
@@ -112,15 +113,32 @@ int main(int argc, char *argv[])
 
   auto config = program.get<std::string>("--config");  
   std::cout << "config: " << config << std::endl;
+
   try
   {
     YAML::Node configNode = YAML::LoadFile(config);
+    if ( configNode["select_hadrons"])
+    {
+      nanoAODWriter->selectHadrons();
+    }
+    if (auto skelanaFlags = configNode["skelana_flags"])
+    {
+      for (auto it = skelanaFlags.begin(); it != skelanaFlags.end(); ++it)
+      {
+        std::string flag = it->first.as<std::string>();
+        int value = it->second.as<int>();
+        std::cout << "skelana_flag: " << flag << " = " << value << std::endl;
+        nanoAODWriter->setOption(flag, value);
+      }
+    }
   }
   catch (const YAML::BadFile &err)
   {
     std::cerr << "ERROR: Unable to open file " << config << std::endl;
     return 1;
   }
+
+
 
   int rc = nanoAODWriter->run(" ");
 

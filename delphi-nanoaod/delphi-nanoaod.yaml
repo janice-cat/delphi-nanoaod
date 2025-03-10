@@ -1,7 +1,7 @@
 ---
-select_t4hadrons: false
+select_hadrons: false   # T4 hadron tag
 
-skelana_flags:
+skelana_flags1:
       IFLTRA: 1         # Track information
       IFLODR: 1         # Reoder tracks
       IFLVEC: 22        # VECP filling
@@ -26,5 +26,5 @@ skelana_flags:
       IFLPHC: 1         # Converted photon
       IFLHAC: 1         # Had. calorimetry
       IFLHAD: 1         # Hadron identification
-      IFLRVO: 1         # V0 reconstruction
+      IFLRV0: 1         # V0 reconstruction
       IFLJET: 1         # Jet reconstruction
