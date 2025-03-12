@@ -31,7 +31,8 @@ namespace skelana
     {
         if (int ident = phdst::IPHPIC("IDEN", 0))
         {
-            return (phdst::IPILOT(ident) = 0x03) == 0x03;
+            // std::cout << std::hex << phdst::IPILOT(ident+6) << " " << phdst::IPILOT(ident+6) << std::endl;
+            return (phdst::IPILOT(ident+6) & 0x03) == 0x03;
         } 
         else 
         {
@@ -42,14 +43,13 @@ namespace skelana
 
     void Analysis::setOption(const std::string &option, int value)
     {
-        auto it = optionMap_.find(option);
-        if (it != optionMap_.end())
+        if (optionMap_.find(option) != optionMap_.end())
         {
-            *it->second = value;
+            options_[option] = value;
         }
         else
         {
-            std::cerr << "Option " << option << " not found." << std::endl;
+            std::cerr << "Unknown option: " << option << std::endl;
         }
     }
 
@@ -86,12 +86,20 @@ namespace skelana
 
     void Analysis::user00()
     {
-        std::cout << "Skelana::Analysis::user00: Initialising"  << std::endl;
+        // std::cout << "Skelana::Analysis::user00: Initialising"  << std::endl;
 
         // Supress floating point errors
         phdst::PHSET("FPE", 0);
         // Skelana initialization
         PSINI();
+
+        for (const auto &opt : options_)
+        {   
+            if (auto it = optionMap_.find(opt.first); it != optionMap_.end())
+            {
+                *it->second = opt.second;
+            }
+        }
 
         printSkelanaSettings(std::cout);
 
@@ -123,7 +131,7 @@ namespace skelana
 
     int Analysis::user01()
     {
-        std::cout << "Skelana::Analysis::user01: Processing pilot " << phdst::NEVENT+1 << std::endl;
+        // std::cout << "Skelana::Analysis::user01: Processing pilot " << phdst::NEVENT+1 << std::endl;
         if (int need = super::user01(); need < 1)
         {
             return need;
@@ -132,8 +140,9 @@ namespace skelana
         if (!checkRecordType())
         {
             return 0;
-        }   
-         // RunSelection
+        }
+
+        // RunSelection
         if (IFLRNQ > 0 && phdst::IIIRUN > 0 && PSRUNS() == 0)
         {
             return 0;
@@ -145,7 +154,7 @@ namespace skelana
             return 0;
         }
 
-        // HAdron Selection
+        // Hadron Selection
         if(selectHadrons_ && !checkHadron())
         {
             return 0;
@@ -188,12 +197,12 @@ namespace skelana
 
     void Analysis::user02()
     {
-        std::cout << "Skelana::Analysis::user02: Processing event " << phdst::NEVENT+1 << std::endl;
+        // std::cout << "Skelana::Analysis::user02: Processing event " << phdst::NEVENT+1 << std::endl;
         PSBEG();
     }
 
     void Analysis::user99()
     {
-        std::cout << "Skelana::Analysis::user99: Terminating"  << std::endl;
+        // std::cout << "Skelana::Analysis::user99: Terminating"  << std::endl;
     }
 };

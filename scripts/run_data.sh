@@ -9,7 +9,6 @@ WORK_DIR=$(mktemp -d)
 cd $WORK_DIR
 
 "$PROJECT_DIR/build/delphi-nanoaod/delphi-nanoaod" \
-	--nickname short94_c2/C10 \
-	--max-events 10 \
-	--config "$PROJECT_DIR/delphi-nanoaod/delphi-nanoaod.yaml" \
+	--nickname short94_c2 \
+	--config "$PROJECT_DIR/config/delphi-nanoaod.yaml" \
 	--output "$OUTPUT_DIR/short94_c2.root" 

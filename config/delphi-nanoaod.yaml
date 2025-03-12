@@ -1,7 +1,7 @@
 ---
 select_hadrons: false   # T4 hadron tag
 
-skelana_flags1:
+skelana_flags:
       IFLTRA: 1         # Track information
       IFLODR: 1         # Reoder tracks
       IFLVEC: 22        # VECP filling

@@ -33,12 +33,12 @@ namespace phdst
 
     void Analysis::user00()
     {
-        std::cout << "PHDST::Analysis::user00: Initialising" << std::endl;
+        // std::cout << "PHDST::Analysis::user00: Initialising" << std::endl;
     }
 
     int Analysis::user01()
     {
-        std::cout << "PHDST::Analysis::user01: Processing pilot " << NEVENT+1 << std::endl;
+        // std::cout << "PHDST::Analysis::user01: Processing pilot " << NEVENT+1 << std::endl;
         if (maxEventsToProcess_ > 0 && NEVENT > maxEventsToProcess_)
         {
             std::cout << "PHDST::Analysis::user01: Reached maximum number of events" << std::endl;
@@ -49,12 +49,12 @@ namespace phdst
 
     void Analysis::user02()
     {
-        std::cout << "PHDST::Analysis::user02: Processing event " << NEVENT+1 << std::endl;
+        // std::cout << "PHDST::Analysis::user02: Processing event " << NEVENT+1 << std::endl;
     }
 
     void Analysis::user99()
     {
-        std::cout << "PHDST::Analysis::user99: Terminating" << std::endl;
+        // std::cout << "PHDST::Analysis::user99: Terminating" << std::endl;
     }
 }
 

@@ -1,0 +1,73 @@
++OPTION VERbose
++USE, $ENV{PLINAM}.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                                                      %
+%   Machine independent cradle to run the SKELETON analysis program    %
+%                                                                      %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
++USE, IBMVM, IF = CERNVM.
++USE, VMS  , IF = ALPHAVMS, VAXVMS.
++USE, UNIX , IF = ALPHAOSF, DECS, HPUX, IBMRT, LINUX.
+%
++EXE.
++PARAM, CLASH, N=1.
+%+OPT, MAPASM, UREF, LOST, BIGUSE.
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%   Get all the KEEP's needed for SKELANA and SKELEXA
+%
+% PHDST CDE's
++USE,P=PHDSTCDE.
++PAM,11,T=A,C, R=PHDSTCDE,   IF=IBMVM.              PHDSTXX CARDS F
++PAM,11,T=A,C, R=PHDSTCDE,   IF=VMS.     DELPHI_PAM:PHDSTXX.CAR
++PAM,11,T=A,C, R=PHDSTCDE,   IF=UNIX.  (DELPHI_PAM)/phdstxx.car
+%
+% DELPHI standard CDE's
++USE,P=STDCDES.
++PAM,11,T=A,C, R=STDCDES,    IF=IBMVM.              STDCDES CARDS E
++PAM,11,T=A,C, R=STDCDES,    IF=VMS.     DELPHI_PAM:STDCDES.CAR
++PAM,11,T=A,C, R=STDCDES,    IF=UNIX.  (DELPHI_PAM)/stdcdes.car
+%
+% JETSET CDE's
++USE,P=JETCDES.
++PAM,11,T=A,C, R=JETCDES,    IF=IBMVM.              JETSET74 CAR W
++PAM,11,T=A,C, R=JETCDES,    IF=VMS.     DELPHI_PAM:JETSET74.CAR
++PAM,11,T=A,C, R=JETCDES,    IF=UNIX.  (DELPHI_PAM)/jetset74.car
+%
+% VECSUB CDE's
++USE,P=VECDES.
++PAM,11,T=A,C, R=VECDES,     IF=IBMVM.              VECSUB72 CARDS E
++PAM,11,T=A,C, R=VECDES,     IF=VMS.     DELPHI_PAM:VECSUB72.CAR
++PAM,11,T=A,C, R=VECDES,     IF=UNIX.  (DELPHI_PAM)/vecsub72.car
+%
+% RICH CDE's 
++USE,P=PXRIUN,D=RIBCDE.
++PAM,11,T=A,C, R=PXRUIN,     IF=IBMVM.             PXRICH CARDS E  
++PAM,11,T=A,C, R=PXRUIN,     IF=VMS.    DELPHI_PAM:pxrich.car
++PAM,11,T=A,C, R=PXRUIN,     IF=UNIX. (DELPHI_PAM)/pxrich.car
+%
++USE,P=ANA_RIBCDE.
++PAM,11,T=A,C, R=ANA_RIBCDE, IF=IBMVM.             RIBMEAN CARDS E  
++PAM,11,T=A,C, R=ANA_RIBCDE, IF=VMS.    DELPHI_PAM:ribmean.car
++PAM,11,T=A,C, R=ANA_RIBCDE, IF=UNIX. (DELPHI_PAM)/ribmean.car
+%
++USE,P=HADCDE.
++PAM,11,T=A,C, R=HADCDE,     IF=IBMVM.             HADSIGN CARDS E  
++PAM,11,T=A,C, R=HADCDE,     IF=VMS.    DELPHI_PAM:hadsign.car
++PAM,11,T=A,C, R=HADCDE,     IF=UNIX. (DELPHI_PAM)/hadsign.car
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%   Get the code of SKELANA and SKELEXA (example) routines
+%
+
++USE,P=PSHORT,D=PSHMC,T=EXE.
++ADD,P=PSHORT,D=PSHMC,L=13.
+      WRITE(*,*) 'PSHMC'
++PAM,11,T=A,C,               IF=IBMVM.              SKELANA CARDS E
++PAM,11,T=A,C,               IF=VMS.     DELPHI_PAM:SKELANA.CAR
++PAM,11,T=A,C,               IF=UNIX.  (DELPHI_PAM)/skelana.car
+%
++QUIT.

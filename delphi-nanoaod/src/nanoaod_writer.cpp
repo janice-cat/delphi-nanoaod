@@ -37,7 +37,7 @@ void NanoAODWriter::setMC()
 
 void NanoAODWriter::user00()
 {
-    std::cout << "NanoAODWriter::user00: Initialising" << std::endl;
+    // std::cout << "NanoAODWriter::user00: Initialising" << std::endl;
     super::user00();
 
     auto model = RNTupleModel::Create();
@@ -128,13 +128,13 @@ void NanoAODWriter::user00()
 
 int NanoAODWriter::user01()
 {
-    std::cout << "NanoAODWriter::user01: Processing pilot " << phdst::NEVENT + 1 << std::endl;
+    // std::cout << "NanoAODWriter::user01: Processing pilot " << phdst::NEVENT + 1 << std::endl;
     return super::user01();
 };
 
 void NanoAODWriter::user02()
 {
-    std::cout << "NanoAODWriter::user02: Processing event " << phdst::NEVENT + 1 << std::endl;
+    // std::cout << "NanoAODWriter::user02: Processing event " << phdst::NEVENT + 1 << std::endl;
     super::user02();
     *Event_runNumber_ = phdst::IIIRUN;
     *Event_evtNumber_ = phdst::IIIEVT;
@@ -178,9 +178,9 @@ void NanoAODWriter::user02()
     }
 
     *nJet_ = sk::NJET;
-    fillVector<XYZTVectorF>(Jet_vector_, sk::LVJET, sk::NJET, [](int i)
+    fillVector<XYZTVectorF>(Jet_vector_, sk::LVJET+1, sk::NJET, [](int i)
                                           { return XYZTVectorF(sk::VECP(1, i), sk::VECP(2, i), sk::VECP(3, i), sk::VECP(4, i)); });
-    fillVector<int16_t>(Jet_charge_, sk::LVJET, sk::NJET, [](int i)
+    fillVector<int16_t>(Jet_charge_, sk::LVJET+1, sk::NJET, [](int i)
                                       { return int(sk::VECP(6, i)); });
 
     fillVector<XYZVectorF>(Thrust_vector_, sk::LVTHRU, 3, [](int i)
@@ -269,6 +269,6 @@ void NanoAODWriter::user02()
 
 void NanoAODWriter::user99()
 {
-    std::cout << "NanoAODWriter::user99: Finalising" << std::endl;
+    // std::cout << "NanoAODWriter::user99: Finalising" << std::endl;
     writer_.reset();
 };
