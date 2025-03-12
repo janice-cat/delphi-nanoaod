@@ -1,5 +1,10 @@
 set (CMAKE_CXX_STANDARD 17)
-add_executable(delphi-nanoaod src/delphi-nanoaod.cpp src/nanoaod_writer.cpp)
+
+configure_file(src/skelana.cra.in skelana.cra)
+ypatchy(skelana.f ${CMAKE_CURRENT_BINARY_DIR}/skelana.cra)
+
+
+add_executable(delphi-nanoaod src/delphi-nanoaod.cpp src/nanoaod_writer.cpp ${CMAKE_CURRENT_BINARY_DIR}/skelana.f)
 
 target_compile_options(delphi-nanoaod PRIVATE -ftemplate-depth=50) # argpase
 target_include_directories(delphi-nanoaod PRIVATE ${ROOT_INCLUDE_DIRS})

@@ -129,10 +129,10 @@ namespace skelana
         float efemc[NCUT];
         float ehac[NCUT];
         float estic[NCUT];
-        float vdonly[NCUT];
+        int vdonly[NCUT];
         int idvdwz[NCUT];
         int ihadrj[NCUT];
-        float istoel[NCUT];
+        int istoel[NCUT];
     } pscutt_;
 
     inline const int MEVBAD = 50000;
@@ -240,10 +240,10 @@ namespace skelana
     inline float &EFEMC(int i) { return pscutt_.efemc[i - 1]; }
     inline float &EHAC(int i) { return pscutt_.ehac[i - 1]; }
     inline float &ESTIC(int i) { return pscutt_.estic[i - 1]; }
-    inline float &VDONLY(int i) { return pscutt_.vdonly[i - 1]; }
+    inline int &VDONLY(int i) { return pscutt_.vdonly[i - 1]; }
     inline int &IDVDWZ(int i) { return pscutt_.idvdwz[i - 1]; }
     inline int &IHADRJ(int i) { return pscutt_.ihadrj[i - 1]; }
-    inline float &ISTOEL(int i) { return pscutt_.istoel[i - 1]; }
+    inline int &ISTOEL(int i) { return pscutt_.istoel[i - 1]; }
 
     inline int &NEVBAD = pscbhp_.nevbad;
     inline int &IRNBAD(int i) { return pscbhp_.irnbad[i - 1]; }

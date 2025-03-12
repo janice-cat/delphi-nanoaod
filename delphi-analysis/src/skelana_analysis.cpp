@@ -31,7 +31,8 @@ namespace skelana
     {
         if (int ident = phdst::IPHPIC("IDEN", 0))
         {
-            return (phdst::IPILOT(ident) = 0x03) == 0x03;
+            std::cout << std::hex << phdst::IPILOT(ident+6) << " " << phdst::IPILOT(ident+6) << std::endl;
+            return (phdst::IPILOT(ident+6) & 0x03) == 0x03;
         } 
         else 
         {
@@ -42,14 +43,13 @@ namespace skelana
 
     void Analysis::setOption(const std::string &option, int value)
     {
-        auto it = optionMap_.find(option);
-        if (it != optionMap_.end())
+        if (optionMap_.find(option) != optionMap_.end())
         {
-            *it->second = value;
+            options_[option] = value;
         }
         else
         {
-            std::cerr << "Option " << option << " not found." << std::endl;
+            std::cerr << "Unknown option: " << option << std::endl;
         }
     }
 
@@ -93,6 +93,14 @@ namespace skelana
         // Skelana initialization
         PSINI();
 
+        for (const auto &opt : options_)
+        {   
+            if (auto it = optionMap_.find(opt.first); it != optionMap_.end())
+            {
+                *it->second = opt.second;
+            }
+        }
+
         printSkelanaSettings(std::cout);
 
         // Read the energy correction  2000
@@ -132,8 +140,9 @@ namespace skelana
         if (!checkRecordType())
         {
             return 0;
-        }   
-         // RunSelection
+        }
+
+        // RunSelection
         if (IFLRNQ > 0 && phdst::IIIRUN > 0 && PSRUNS() == 0)
         {
             return 0;
@@ -145,7 +154,7 @@ namespace skelana
             return 0;
         }
 
-        // HAdron Selection
+        // Hadron Selection
         if(selectHadrons_ && !checkHadron())
         {
             return 0;
