@@ -12,5 +12,7 @@ cd $WORK_DIR
 	--nickname sh_qqps_k94_2l_c2/C10 \
 	--max-events 10 \
 	--mc \
-	--config "$PROJECT_DIR/delphi-nanoaod/delphi-nanoaod.yaml" \
+	--config "$PROJECT_DIR/config/delphi-nanoaod.yaml" \
 	--output "$OUTPUT_DIR/sh_qqps_k94_2l_c2.root" 
+
+

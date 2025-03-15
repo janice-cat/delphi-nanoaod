@@ -1,20 +1,22 @@
 executable            = scripts/delphi-nanoaod-lxbatch.sh
-arguments             = "$(input) $(config) $(extra)"
-output                = output/delphi-nanoaod.$(ClusterId).$(input).out
-error                 = output/delphi-nanoaod.$(ClusterId).$(input).err
+arguments             = short94_c2 default --max-events 1000
+output                = output/delphi-nanoaod.$(ClusterId).short94_c2.out
+error                 = output/delphi-nanoaod.$(ClusterId).short94:c2.err
 log                   = output/delphi-nanoaod.$(ClusterId).log
 
-+JobFlavour = "espresso"
-# +JobFlavour = "longlunch"
++JobFlavor = "espresso"
+# +JobFlavor = "longlunch"
+
+queue
 
 #transfer_output_files = "*.root"
 #output_destination = root://eosuser.cern.ch//eos/user/d/dliko/delphi-nanoaod/v0.0.1
 #MY.XRDCP_CREATE_DIR = True
 
-queue input, config, extra from (
-  short94_c2, default, --max-events 1000
-  sh_qqps_b94_2l_c2, default, --mc --max-events 1000
-)
+#queue input,config,extra from (
+#  short94_c2, default, --max-events 1000
+#  sh_qqps_b94_2l_c2, default, --mc --max-events 1000
+#)
 
 #queue input, config, extra from (
 #  short94_c2, default, 

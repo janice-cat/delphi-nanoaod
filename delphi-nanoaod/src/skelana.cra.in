@@ -63,9 +63,13 @@
 %   Get the code of SKELANA and SKELEXA (example) routines
 %
 
-+USE,P=PSHORT,D=PSHMC,T=EXE.
-+ADD,P=PSHORT,D=PSHMC,L=13.
-      WRITE(*,*) 'PSHMC'
++USE,P=PSSERV,D=PSJETS,T=EXE.
++ADD, P=PSSERV, D=PSJETS, L=70.
+*
+*     Pass some additional values 
+*
+      COMMON/PSJVAL/THR,OBL,SPH,APL
+*
 +PAM,11,T=A,C,               IF=IBMVM.              SKELANA CARDS E
 +PAM,11,T=A,C,               IF=VMS.     DELPHI_PAM:SKELANA.CAR
 +PAM,11,T=A,C,               IF=UNIX.  (DELPHI_PAM)/skelana.car

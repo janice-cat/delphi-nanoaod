@@ -45,12 +45,22 @@ protected:
     virtual void user99();
 
 private:
+    void fillEvent();
+    void fillPart();
+    void fillJet();
+    void fillVtx();
+    void fillSimPart();
+    void fillGenPart();
+    void fillSimVtx();
+    void fillTrac();
+    void fillMuid();
+    void fillElid();
     std::filesystem::path output_;
     std::unique_ptr<RNTupleWriter> writer_;
     bool mc_;
 
     std::shared_ptr<int> Event_runNumber_;
-    std::shared_ptr<int> Event_evtNumber_;
+    std::shared_ptr<int> Event_eventNumber_;
     std::shared_ptr<int> Event_fillNumber_;
     std::shared_ptr<int> Event_date_;
     std::shared_ptr<int> Event_time_;
@@ -81,9 +91,12 @@ private:
     std::shared_ptr<std::vector<XYZTVectorF>> Jet_vector_;
     std::shared_ptr<std::vector<int16_t>> Jet_charge_;
 
-    std::shared_ptr<std::vector<XYZVectorF>> Thrust_vector_;
-
-    std::shared_ptr<std::vector<XYZVectorF>> Sphericity_vector_;
+    std::shared_ptr<float> Jet_thrust_;
+    std::shared_ptr<float> Jet_oblatness_;
+    std::shared_ptr<std::vector<XYZVectorF>> Jet_thrustVector_;
+    std::shared_ptr<float> Jet_sphericity_;
+    std::shared_ptr<float> Jet_aplanarity_;
+    std::shared_ptr<std::vector<XYZVectorF>> Jet_sphericityVector_;
 
     std::shared_ptr<int16_t> nSimPart_;
     std::shared_ptr<std::vector<XYZTVectorF>> SimPart_vector_;
@@ -126,55 +139,46 @@ private:
     std::shared_ptr<std::vector<int16_t>> SimVtx_errorFlag_;
     std::shared_ptr<std::vector<int16_t>> SimVtx_status_;
 
-    // std::shared_ptr<int16_t> Part_tracIdx_;
-    // std::shared_ptr<int16_t> Trac_originVtxIdx_;
-    // std::shared_ptr<int16_t> Trac_decayVtxIdx_;
-    // std::shared_ptr<float> Trac_impactParRPhi_;
-    // std::shared_ptr<float> Trac_impactParZ_;
-    // std::shared_ptr<float> Trac_thetaPerigee_;
-    // std::shared_ptr<float> Trac_phiPerigee_;
-    // std::shared_ptr<float> Trac_curvaturePerigee_;
-    // std::shared_ptr<ROOT::Math::SMatrixSym5F> Trac_weightMatrix_;
-    // std::shared_ptr<int16_t> Trac_detectors_;
-    // std::shared_ptr<float> Trac_rFirstPoint_;
-    // std::shared_ptr<float> Trac_zFirstPoint_;
-    // std::shared_ptr<float> Trac_chi2NoVD_;
-    // std::shared_ptr<float> Trac_chi2VD_;
-    // std::shared_ptr<int16_t> Trac_ndfNoVD_;
-    // std::shared_ptr<int16_t> Trac_ndfVD_;
-    // std::shared_ptr<int16_t> Trac_nHitVDRPhi_;
-    // std::shared_ptr<int16_t> Trac_nHitVDZ_;
-    // std::shared_ptr<float> Trac_resRPhiFirstPoint_;
-    // std::shared_ptr<float> Trac_errorResRPhiFirstPoint_;
-    // std::shared_ptr<float> Trac_resZFirstPoint_;
-    // std::shared_ptr<float> Trac_errorResZFirstPoint_;
-    // std::shared_ptr<float> Trac_impactParameterVertexGeomSign_;
-    // std::shared_ptr<float> Trac_impactParameterZGeomSign_;
-    // std::shared_ptr<float> Trac_impactParameterBeamSpotGeomSign_;
-    // std::shared_ptr<float> Trac_energyError_;
-    // std::shared_ptr<float> Trac_chi2VD_;
+    std::shared_ptr<std::vector<int16_t>> Part_tracIdx_;
+    std::shared_ptr<std::vector<int16_t>> Trac_originVtxIdx_;
+    std::shared_ptr<std::vector<int16_t>> Trac_decayVtxIdx_;
+    std::shared_ptr<std::vector<float>> Trac_impactParRPhi_;
+    std::shared_ptr<std::vector<float>> Trac_impactParZ_;
+    std::shared_ptr<std::vector<float>> Trac_thetaPerigee_;
+    std::shared_ptr<std::vector<float>> Trac_phiPerigee_;
+    std::shared_ptr<std::vector<float>> Trac_curvaturePerigee_;
+    std::shared_ptr<std::vector<ROOT::Math::SMatrixSym5F>> Trac_weightMatrix_;
+    std::shared_ptr<std::vector<float>> Trac_length_;
+    std::shared_ptr<std::vector<int16_t>> Trac_detectors_;
+    std::shared_ptr<std::vector<float>> Trac_rFirstPoint_;
+    std::shared_ptr<std::vector<float>> Trac_zFirstPoint_;
+    std::shared_ptr<std::vector<float>> Trac_chi2NoVD_;
+    std::shared_ptr<std::vector<float>> Trac_chi2VD_;
+    std::shared_ptr<std::vector<int16_t>> Trac_ndfNoVD_;
+    std::shared_ptr<std::vector<int16_t>> Trac_ndfVD_;
+    std::shared_ptr<std::vector<int16_t>> Trac_nHitVDRPhi_;
+    std::shared_ptr<std::vector<int16_t>> Trac_nHitVDZ_;
+    std::shared_ptr<std::vector<float>> Trac_resRPhiFirstPoint_;
+    std::shared_ptr<std::vector<float>> Trac_errorResRPhiFirstPoint_;
+    std::shared_ptr<std::vector<float>> Trac_resZFirstPoint_;
+    std::shared_ptr<std::vector<float>> Trac_errorResZFirstPoint_;
+    std::shared_ptr<std::vector<float>> Trac_impactParameterVertexGeomSign_;
+    std::shared_ptr<std::vector<float>> Trac_impactParameterZGeomSign_;
+    std::shared_ptr<std::vector<float>> Trac_impactParameterBeamSpotGeomSign_;
+    // std::shared_ptr<std::vector<float>> Trac_energyError_;
+    std::shared_ptr<std::vector<float>> Trac_chi2VDHits_;
 
-    // std::shared_ptr<int16_t> Part_muidIdx_;
-    // std::shared_ptr<int> Muid_tag_;
-    // std::shared_ptr<float> Muid_looseChi2_;
-    // std::shared_ptr<int16_t> Muid_hitPattern_;
+    std::shared_ptr<std::vector<int16_t>> Part_muidIdx_;
+    std::shared_ptr<std::vector<int>> Muid_tag_;
+    std::shared_ptr<std::vector<float>> Muid_looseChi2_;
+    std::shared_ptr<std::vector<int16_t>> Muid_hitPattern_;
 
-    // std::shared_ptr<int16_t> Part_elidIdx_;
-    // std::shared_ptr<int16_t> Elid_gammaConversion_;
-    // std::shared_ptr<int16_t> Elid_px_;
-    // std::shared_ptr<int16_t> Elid_py_;
-    // std::shared_ptr<int16_t> Elid_pz_;
-
-    // std::shared_ptr<int16_t> Part_haidIdx_;
-    // std::shared_ptr<int16_t> Haid_pionTag_;
-    // std::shared_ptr<int16_t> Haid_kaonTag_;
-    // std::shared_ptr<int16_t> Haid_protonTag_;
-    // std::shared_ptr<int16_t> Haid_heavyTag_;
-    // std::shared_ptr<int16_t> Haid_pionSelection_;
-    // std::shared_ptr<int16_t> Haid_kaonSelection_;
-    // std::shared_ptr<int16_t> Haid_protonSelection_;
-    // std::shared_ptr<int16_t> Haid_heavySelection_;
-
+    std::shared_ptr<std::vector<int16_t>> Part_elidIdx_;
+    std::shared_ptr<std::vector<int>> Elid_tag_;
+    std::shared_ptr<std::vector<int16_t>> Elid_gammaConversion_;
+    std::shared_ptr<std::vector<float>> Elid_px_;
+    std::shared_ptr<std::vector<float>> Elid_py_;
+    std::shared_ptr<std::vector<float>> Elid_pz_;
 
 };
 

@@ -197,6 +197,34 @@ namespace skelana
         int istvx[NVMAX][2];
     } psctbl_;
 
+    inline const int LENTRA = 42;
+    extern "C" struct
+    {
+        int ntrac;
+        int ktrac[MTRACK][LENTRA];
+    } psctra_;
+
+    inline const int LENMUD = 3;
+    extern "C" struct
+    {
+        int nmuid;
+        int kmuid[MTRACK][LENMUD];
+    } pscmud_;
+
+    inline const int LENELD = 5;
+    extern "C" struct
+    {
+        int nelid;
+        int kelid[MTRACK][LENELD];
+    } psceld_;
+
+    inline const int LENHAD = 9;
+    extern "C" struct
+    {
+        int nhaid;
+        int khaid[MTRACK][LENHAD];
+    } pschad_;
+
     inline int &IFLTRA = pscflg_.ifltra;
     inline int &IFLFIX = pscflg_.iflfix;
     inline int &IFLRNQ = pscflg_.iflrnq;
@@ -316,6 +344,22 @@ namespace skelana
     inline int &ISTLU(int i) { return psctbl_.istlu[i - 1]; }
     inline int &IPAPV(int i, int j) { return psctbl_.ipapv[j - 1][i - 1]; }
     inline int &ISTVX(int i, int j) { return psctbl_.istvx[j - 1][i - 1]; }
+
+    inline int &NTRAC = psctra_.ntrac;
+    inline int &KTRAC(int i, int j) { return psctra_.ktrac[j - 1][i - 1]; }
+    inline float &QTRAC(int i, int j) { return *reinterpret_cast<float *>(&psctra_.ktrac[j - 1][i - 1]); }
+    
+    inline int &NMUID = pscmud_.nmuid;
+    inline int &KMUID(int i, int j) { return pscmud_.kmuid[j - 1][i - 1]; }
+    inline float &QMUID(int i, int j) { return *reinterpret_cast<float *>(&pscmud_.kmuid[j - 1][i - 1]); }
+
+    inline int &NELID = psceld_.nelid;
+    inline int &KELID(int i, int j) { return psceld_.kelid[j - 1][i - 1]; }
+    inline float &QELID(int i, int j) { return *reinterpret_cast<float *>(&psceld_.kelid[j - 1][i - 1]); }
+
+    inline int &NHAID = pschad_.nhaid;
+    inline int &KHAID(int i, int j) { return pschad_.khaid[j - 1][i - 1]; }
+    inline float &QHAID(int i, int j) { return *reinterpret_cast<float *>(&pschad_.khaid[j - 1][i - 1]); }
 } // namespace skelana
 
 #endif // SKELANA_HPP

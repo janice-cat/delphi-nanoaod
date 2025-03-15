@@ -11,8 +11,6 @@ cmake_minimum_required(VERSION 3.26)
 project(DELPHI-NanoAOD VERSION 0.1 LANGUAGES CXX)
 set (CMAKE_CXX_STANDARD 17)
 
-include_directories(${CMAKE_SOURCE_DIR}/include)
-
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
 
 find_package(DELPHI REQUIRED)
