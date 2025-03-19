@@ -45,16 +45,33 @@ protected:
     virtual void user99();
 
 private:
+    void defineEvent(std::unique_ptr<RNTupleModel> &model);
     void fillEvent();
+    void definePart(std::unique_ptr<RNTupleModel> &model);
     void fillPart();
+    void defineJet(std::unique_ptr<RNTupleModel> &model);
     void fillJet();
+    void defineVtx(std::unique_ptr<RNTupleModel> &model);
     void fillVtx();
+    void defineSimPart(std::unique_ptr<RNTupleModel> &model);
     void fillSimPart();
+    void defineGenPart(std::unique_ptr<RNTupleModel> &model);
     void fillGenPart();
+    void defineSimVtx(std::unique_ptr<RNTupleModel> &model);
     void fillSimVtx();
+    void defineBeamSpot(std::unique_ptr<RNTupleModel> &model);
+    void fillBeamSpot();
+    void defineTrac(std::unique_ptr<RNTupleModel> &model);
     void fillTrac();
+    void defineMuid(std::unique_ptr<RNTupleModel> &model);
     void fillMuid();
+    void defineElid(std::unique_ptr<RNTupleModel> &model);
     void fillElid();
+    void defineHadid(std::unique_ptr<RNTupleModel> &model);
+    void fillHadid();
+    void defineBtag(std::unique_ptr<RNTupleModel> &model);
+    void fillBtag();
+
     std::filesystem::path output_;
     std::unique_ptr<RNTupleWriter> writer_;
     bool mc_;
@@ -139,6 +156,9 @@ private:
     std::shared_ptr<std::vector<int16_t>> SimVtx_errorFlag_;
     std::shared_ptr<std::vector<int16_t>> SimVtx_status_;
 
+    std::shared_ptr<XYZVectorF> Beam_position_;
+    std::shared_ptr<XYZVectorF> Beam_size_;
+
     std::shared_ptr<std::vector<int16_t>> Part_tracIdx_;
     std::shared_ptr<std::vector<int16_t>> Trac_originVtxIdx_;
     std::shared_ptr<std::vector<int16_t>> Trac_decayVtxIdx_;
@@ -179,6 +199,70 @@ private:
     std::shared_ptr<std::vector<float>> Elid_px_;
     std::shared_ptr<std::vector<float>> Elid_py_;
     std::shared_ptr<std::vector<float>> Elid_pz_;
+
+    std::shared_ptr<std::vector<int>> Haid_sign_;
+    std::shared_ptr<std::vector<int>> Haid_kaonDedx_;
+    std::shared_ptr<std::vector<int>> Haid_protonDedx_;
+    std::shared_ptr<std::vector<int>> Haid_kaonRich_;
+    std::shared_ptr<std::vector<int>> Haid_protonRich_;
+    std::shared_ptr<std::vector<int>> Haid_pionRich_;
+    std::shared_ptr<std::vector<float>> Haid_kaonCombined_;
+    std::shared_ptr<std::vector<float>> Haid_protonCombined_;
+    std::shared_ptr<std::vector<int>>Haid_richQuality_;
+
+    std::shared_ptr<std::vector<int8_t>> Haidn_pionTag_;
+    std::shared_ptr<std::vector<int8_t>> Haidn_kaonTag_;
+    std::shared_ptr<std::vector<int8_t>> Haidn_protonTag_;
+    std::shared_ptr<std::vector<int8_t>> Haidn_heavyTag_;
+    std::shared_ptr<std::vector<int8_t>> Haidn_pionTrackSelection_;
+    std::shared_ptr<std::vector<int8_t>> Haidn_kaonTrackSelection_;
+    std::shared_ptr<std::vector<int8_t>> Haidn_protonTrackSelection_;
+    std::shared_ptr<std::vector<int8_t>> Haidn_heavyTrackSelection_;
+
+    std::shared_ptr<std::vector<int8_t>> Haidr_pionTag_;
+    std::shared_ptr<std::vector<int8_t>> Haidr_kaonTag_;
+    std::shared_ptr<std::vector<int8_t>> Haidr_protonTag_;
+    std::shared_ptr<std::vector<int8_t>> Haidr_heavyTag_;
+    std::shared_ptr<std::vector<int8_t>> Haidr_electronTag_;
+    std::shared_ptr<std::vector<int8_t>> Haidr_selectionFlag_;
+
+    std::shared_ptr<std::vector<int8_t>> Haide_pionTag_;
+    std::shared_ptr<std::vector<int8_t>> Haide_kaonTag_;
+    std::shared_ptr<std::vector<int8_t>> Haide_protonTag_;
+    std::shared_ptr<std::vector<int8_t>> Haide_heavyTag_;
+    std::shared_ptr<std::vector<int8_t>> Haide_electronTag_;
+    std::shared_ptr<std::vector<int8_t>> Haide_selectionFlag_;
+
+    std::shared_ptr<std::vector<int8_t>> Haidc_pionTag_;
+    std::shared_ptr<std::vector<int8_t>> Haidc_kaonTag_;
+    std::shared_ptr<std::vector<int8_t>> Haidc_protonTag_;
+    std::shared_ptr<std::vector<int8_t>> Haidc_heavyTag_;
+    std::shared_ptr<std::vector<int8_t>> Haidc_electronTag_;
+    std::shared_ptr<std::vector<int8_t>> Haidc_selectionFlag_;
+
+    std::shared_ptr<std::vector<float>>  Dedx_value_;
+    std::shared_ptr<std::vector<float>>  Dedx_width_;
+    std::shared_ptr<std::vector<int16_t>> Dedx_nrWires_; 
+    std::shared_ptr<std::vector<float>> Dedx_gapWires_; 
+    std::shared_ptr<std::vector<float>>  Dedx_error_;
+    std::shared_ptr<std::vector<float>>  Dedx_valueVD_; 
+    std::shared_ptr<std::vector<int16_t>> Dedx_nrVDHits_;
+
+    std::shared_ptr<std::vector<float>> Rich_theg_;
+    std::shared_ptr<std::vector<float>> Rich_sigg_;
+    std::shared_ptr<std::vector<int16_t>> Rich_nphg_;
+    std::shared_ptr<std::vector<float>> Rich_nepg_;
+    std::shared_ptr<std::vector<int16_t>> Rich_flagg_;
+    std::shared_ptr<std::vector<float>> Rich_thel_;
+    std::shared_ptr<std::vector<float>> Rich_sigl_;
+    std::shared_ptr<std::vector<int16_t>> Rich_nphl_;
+    std::shared_ptr<std::vector<float>> Rich_nepl_;
+    std::shared_ptr<std::vector<int16_t>> Rich_flagl_;
+
+    std::shared_ptr<std::vector<float>> Btag_probNegIP_;
+    std::shared_ptr<std::vector<float>> Btag_probPosIP_;
+    std::shared_ptr<std::vector<float>> Btag_probAllIP_;
+    std::shared_ptr<XYZVectorF> Btag_thrustVector_; 
 
 };
 
