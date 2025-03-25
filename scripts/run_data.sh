@@ -10,6 +10,6 @@ cd $WORK_DIR
 
 "$PROJECT_DIR/build/delphi-nanoaod/delphi-nanoaod" \
 	--nickname short94_c2 \
-	--max-events 10 \
+	--max-events 1000 \
 	--config "$PROJECT_DIR/config/delphi-nanoaod.yaml" \
 	--output "$OUTPUT_DIR/short94_c2.root" 

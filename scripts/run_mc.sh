@@ -9,8 +9,8 @@ WORK_DIR=$(mktemp -d)
 cd $WORK_DIR
 
 "$PROJECT_DIR/build/delphi-nanoaod/delphi-nanoaod" \
-	--nickname sh_qqps_k94_2l_c2/C10 \
-	--max-events 10 \
+	--nickname sh_qqps_sa95_1l_d2/C30 \
+	--max-events 1000 \
 	--mc \
 	--config "$PROJECT_DIR/config/delphi-nanoaod.yaml" \
 	--output "$OUTPUT_DIR/sh_qqps_k94_2l_c2.root" 

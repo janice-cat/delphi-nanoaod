@@ -65,34 +65,32 @@ void NanoAODWriter::user00()
     {
         defineJet(model);
     }
- 
     if (mc_ && sk::IFLSIM > 0)
     {
         defineSimPart(model);
         defineGenPart(model);
         defineSimVtx(model);
-     }
-
+    }
     if (sk::IFLTRA > 0)
     {
         defineTrac(model);
     }
-
     if (sk::IFLMUO > 0)
     {
         defineMuid(model);    
     }
-
     if (sk::IFLELE > 0)
     {
         defineElid(model);
     }
-
+    if (sk::IFLHAD > 0)
+    {
+        defineHadid(model);
+    }   
     if (sk::IFLBTG > 0)
     {
         defineBtag(model);
     }
-
     writer_ = RNTupleWriter::Recreate(std::move(model), "Events", output_.string());
 };
 
@@ -118,7 +116,6 @@ void NanoAODWriter::user02()
         fillGenPart();
         fillSimVtx();
     }
-
     if (sk::IFLTRA > 0)
     {
         fillTrac();
@@ -134,6 +131,10 @@ void NanoAODWriter::user02()
     if (sk::IFLBTG > 0)
     {
         fillBtag();
+    }
+    if (sk::IFLHAD > 0)
+    {
+        fillHadid();
     }
 
     writer_->Fill();
@@ -633,6 +634,18 @@ void NanoAODWriter::defineHadid(std::unique_ptr<RNTupleModel> &model)
     Dedx_error_ = model->MakeField<std::vector<float>>({"Dedx_error", "Dedx value error"});
     Dedx_valueVD_ = model->MakeField<std::vector<float>>({"Dedx_valueVD", "Dedx VD value"});
     Dedx_nrVDHits_ = model->MakeField<std::vector<int16_t>>({"Dedx_nrVDHits", "Number of VD hits"});
+
+    Rich_theg_ = model->MakeField<std::vector<float>>({"Rich_theg", "Cherenkov angle gas radiator"});
+    Rich_sigg_ = model->MakeField<std::vector<float>>({"Rich_sigg", "Sigma of Cherenvov angle gas radiator"});
+    Rich_nphg_ = model->MakeField<std::vector<int16_t>>({"Rich_nphg", "Observerd number of photons gas radiator"});
+    Rich_nepg_ = model->MakeField<std::vector<float>>({"Rich_nepg", "Expected number of photons gas radiator"});
+    Rich_flagg_ = model->MakeField<std::vector<int16_t>>({"Rich_flagg", "Flag gas radiator"});
+    Rich_thel_ = model->MakeField<std::vector<float>>({"Rich_thel", "Cherenkov angle liquid radiator"});
+    Rich_sigl_ = model->MakeField<std::vector<float>>({"Rich_sigl", "Sigma of Cherenkov angle liquid radiator"});
+    Rich_nphl_ = model->MakeField<std::vector<int16_t>>({"Rich_nphl", "Observerd number of photons liquid radiator"});
+    Rich_nepl_ = model->MakeField<std::vector<float>>({"Rich_nepl", "Expected number of photons liquid radiator"});
+    Rich_flagl_ = model->MakeField<std::vector<int16_t>>({"Rich_flagl", "Flag liquid radiator"});
+
 }
 
 void NanoAODWriter::fillHadid()

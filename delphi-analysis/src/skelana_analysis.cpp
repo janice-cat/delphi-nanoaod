@@ -32,7 +32,7 @@ namespace skelana
         if (int ident = phdst::IPHPIC("IDEN", 0))
         {
             // std::cout << std::hex << phdst::IPILOT(ident+6) << " " << phdst::IPILOT(ident+6) << std::endl;
-            std::cout << std::hex << phdst::IPILOT(ident+6) << " " << phdst::IPILOT(ident+6) << std::endl;
+            // std::cout << std::hex << phdst::IPILOT(ident+6) << " " << phdst::IPILOT(ident+6) << std::endl;
             return (phdst::IPILOT(ident+6) & 0x03) == 0x03;
         } 
         else 

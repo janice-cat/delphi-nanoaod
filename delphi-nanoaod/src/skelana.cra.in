@@ -70,8 +70,12 @@
 *
       COMMON/PSJVAL/THR,OBL,SPH,APL
 *
-+PAM,11,T=A,C,               IF=IBMVM.              SKELANA CARDS E
-+PAM,11,T=A,C,               IF=VMS.     DELPHI_PAM:SKELANA.CAR
 +PAM,11,T=A,C,               IF=UNIX.  (DELPHI_PAM)/skelana.car
 %
++USE, P=BBXID, D=BBMSC, T=EXE.
++REPL, P=BBXID, D=BBMSC, L=35.
+C      WRITE(*,*) 'LSH = ', LSH
+C      IF (LSH .GE. 0) WRITE(*,*) 'IQ(LSH+4) = ', IQ(LSH+4)
+      IF (LSH .GE. 0 .AND. IQ(LSH+4) .GE. 0) THEN
++PAM,11,T=A,C,               IF=UNIX.  (DELPHI_PAM)/dedxid.car
 +QUIT.
