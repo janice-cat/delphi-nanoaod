@@ -4,21 +4,30 @@
 NICKNAME="$1"
 if [ "$2" = "default" ]; then
     CONFIG="delphi-nanoaod"
+    OUTPUT="$NICKNAME.root"
 else
     CONFIG="delphi-nanoaod-$2"
+    OUTPUT="$NICKNAME-$2.root"
 fi
-OUTPUT="${NICKNAME}-$2.root"
 shift 2
 
 # Set up the environment
 set +x
-source /cvmfs/delphi.cms.cern.ch/setup.sh
-source /cvmfs/sft.cern.ch/lcg/app/releases/ROOT/6.34.04/x86_64-almalinux9.5-gcc115-opt/bin/thisroot.sh
+if [ -z "$DELPHI" ]; then
+    source /cvmfs/delphi.cern.ch/setup.sh
+fi
+if [ -z "$ROOTSYS" ]; then
+    source /cvmfs/sft.cern.ch/lcg/app/releases/ROOT/6.34.04/x86_64-almalinux9.5-gcc115-opt/bin/thisroot.sh
+fi
 set -x
 
-PROJECT_DIR="$(dirname "$(dirname "$SUBMIT_FILE")")"
-CONFIG_FILE="${PROJECT_DIR}/config/${CONFIG}.yaml"
+CONFIG_FILE="$(realpath "$SUBMIT_DIR/../config/$CONFIG.yaml")"
+BINARY_FILE="$(realpath "$SUBMIT_DIR/../build/delphi-nanoaod/delphi-nanoaod")"
 
-"$PROJECT_DIR/build/delphi-nanoaod/delphi-nanoaod" -N "$NICKNAME" -C "$CONFIG_FILE" -O "$OUTPUT" "$@"
+if [ "$1" = "." ]; then
+    "$BINARY_FILE" -N "$NICKNAME" -C "$CONFIG_FILE" -O "$OUTPUT"
+else
+    "$BINARY_FILE" -N "$NICKNAME" -C "$CONFIG_FILE" -O "$OUTPUT" "$@"
+fi
 
-ls -l
+xrdcp "$OUTPUT" "root://eosuser.cern.ch//eos/user/${USER:0:1}/$USER/delphi-nanoaod/$OUTPUT"
