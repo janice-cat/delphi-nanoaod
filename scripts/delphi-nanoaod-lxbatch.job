@@ -14,8 +14,8 @@ environment           = SUBMIT_DIR=$(submit_dir)
 transfer_output_files   = ""
 
 #+JobFlavor = "espresso"
-#+JobFlavor = "longlunch"
-+JobFlavor = "workday"
++JobFlavour = "longlunch"
+#+JobFlavour = "workday"
 
 #queue nickname, config, extra from (
 #   short94_c2, default, --max-events 1000
