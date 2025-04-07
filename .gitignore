@@ -4,3 +4,4 @@ fort.*
 *.root
 output
 eos
+.direnv

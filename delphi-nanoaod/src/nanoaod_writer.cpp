@@ -149,7 +149,7 @@ void NanoAODWriter::defineEvent(std::unique_ptr<RNTupleModel> &model)
     Event_time_ = model->MakeField<int>({"Event_time", "Time"});
     Event_magField_ = model->MakeField<float>({"Event_magField", "Magnetic field"});
     Event_shortDstVersion_ = model->MakeField<int8_t>({"Event_shortDstVersion", "Short DST version"});
-    Event_hadronTag_ = model->MakeField<int8_t>({"Event_hadronTag", "T4 Hadron tag"});
+    Event_hadronT4_ = model->MakeField<bool>({"Event_hadronTag", "T4 Hadron tag"});
     Event_nChaMultT4_ = model->MakeField<int16_t>({"Event_nChaMultT4", "Number of charged particles with T4"});
     Event_nChaMult_ = model->MakeField<int16_t>({"Event_nChaMult", "Number of charged particles"});
     Event_nNeuMult_ = model->MakeField<int16_t>({"Event_nNeuMult", "Number of neutral particles"});
@@ -169,7 +169,7 @@ void NanoAODWriter::fillEvent()
     *Event_time_ = phdst::IIITIM;
     *Event_magField_ = sk::BMAG;
     *Event_shortDstVersion_ = sk::ISVER;
-    *Event_hadronTag_ = sk::IHAD4;
+    *Event_hadronT4_ = sk::IHAD4 > 0;
     *Event_nChaMultT4_ = sk::NCTR4;
     *Event_nChaMult_ = sk::NCTRK;
     *Event_nNeuMult_ = sk::NNTRK;

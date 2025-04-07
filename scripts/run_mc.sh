@@ -6,7 +6,9 @@ OUTPUT_DIR="/afs/cern.ch/work/${USER:0:1}/${USER}/delphi-nanoaod"
 mkdir -p "$OUTPUT_DIR"
 
 WORK_DIR=$(mktemp -d)
-cd $WORK_DIR
+cd "$WORK_DIR" || exit 1
+trap 'rm -rf "$WORK_DIR"' EXIT
+
 
 "$PROJECT_DIR/build/delphi-nanoaod/delphi-nanoaod" \
 	--nickname sh_qqps_sa95_1l_d2/C30 \

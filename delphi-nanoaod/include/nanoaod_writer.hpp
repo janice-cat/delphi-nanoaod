@@ -84,7 +84,7 @@ private:
     std::shared_ptr<float> Event_magField_;
     std::shared_ptr<float> Event_cmEnergy_;
     std::shared_ptr<int8_t> Event_shortDstVersion_;
-    std::shared_ptr<int8_t> Event_hadronTag_;
+    std::shared_ptr<bool> Event_hadronT4_;
     std::shared_ptr<int16_t> Event_nChaMultT4_;
     std::shared_ptr<int16_t> Event_nChaMult_;
     std::shared_ptr<int16_t> Event_nNeuMult_;

@@ -38,6 +38,9 @@ void configure_parser(argparse::ArgumentParser &program)
       .help("Write simulation information")
       .flag();
 
+  program.add_argument("--data")
+      .help("Do not simulation information (default)")
+      .flag();
 }
 
 int create_pdlinput(const argparse::ArgumentParser &program)

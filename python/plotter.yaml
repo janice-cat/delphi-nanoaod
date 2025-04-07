@@ -1,0 +1,36 @@
+---
+- name: main
+  Define:
+    Part_momentum: "MapRVec(Part_vector,getP)"
+    Part_pT: "MapRVec(Part_vector,getPt)"
+    Part_theta: "MapRVec(Part_vector,getTheta)"
+    Part_phi: "MapRVec(Part_vector,getPhi)"
+  Histo1D:
+    - name: hadronTag
+      title: Team4 Hadron Tag
+      bins: [21,-10.5,10.5]
+      varname: Event_hadronTag
+    - name: Event_nChaMultT4
+      title: Team 4 charged multiplicity
+      bins: [51,-0.5,50.5]
+    - name: Event_nChaMult
+      title: Charged multiplicity
+      bins: [51,-0.5,50.5]
+    - name: Event_nNeuMult
+      title: Neutral multiplicity
+      bins: [51,-0.5,50.5]
+    - name: Part_momentum
+      title: Particle momentum
+      bins: [100,0.,100.] 
+    - name: Part_pT
+      title: Particle pT
+      bins: [100,0.,100.]
+    - name: Part_theta
+      title: Particle theta
+      bins: [100,0.,3.14159]
+    - name: Part_phi
+      title: Particle phi
+      bins: [100,-3.14159,3.14159]
+    - name: nJet
+      title: Number of jets
+      bins: [21,-0.5,20.5]

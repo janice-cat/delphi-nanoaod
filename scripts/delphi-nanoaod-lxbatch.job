@@ -23,8 +23,24 @@ transfer_output_files   = ""
 #)
 
 queue nickname, config, extra from (
-  short94_c2, default, .
-  short95_d2, default, .   
+  short91_f1, default, --data
+  short92_e2, default, --data
+  short93_d2, default, --data
+  short94_c2, default, --data
+  short95_d2, default, --data
+  sh_qqps_b91_2_f1, default, --mc
+  sh_qqps_b91_2_f1, default, --mc
+  sh_qqps_k91_2_f1, default, --mc
+  sh_qqps_m91_2_f1, default, --mc
+  sh_qqps_r91_2_f1, default, --mc
+  sh_qqps_sa91_2_f1, default, --mc
+  sh_qqps_k92_2g_e2, default, --mc
+  sh_qqps_k92_2l_e2, default, --mc
+  sh_qqps_r92_2g_e2, default, --mc
+  sh_qqps_r92_2l_e2, default, --mc
+  sh_qqps_sa92_2l_e2, default, --mc
+  sh_qqps_k93_2g_d2, default, --mc
+  sh_qqps_k93_2l_d2, default, --mc
   sh_qqps_b94_2l_c2, default, --mc 
   sh_qqps_k94_2l_c2, default, --mc
   sh_qqps_r94_2l_c2, default, --mc

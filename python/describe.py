@@ -4,21 +4,29 @@
 #
 # This script prints the description of the dataframe using the RDF interface.
 #
-# Dietrich Liko, 2025 
+# Dietrich Liko, 2025
 
-import argparse
+import pathlib
 
+import click
 import ROOT
 
-def main():
 
-    parser = argparse.ArgumentParser(description='Print dataframe description')
-    parser.add_argument('--input', help='Input file', required=True)
-    args = parser.parse_args()
-    
-    file = ROOT.TFile.Open(args.input)
-    df = ROOT.RDF.Experimental.FromRNTuple(file['Events'])
+@click.command()
+@click.argument(
+    "input_path",
+    metavar="PATH",
+    type=click.Path(exists=True, dir_okay=False, path_type=pathlib.Path),
+)
+def main(input_path: pathlib.Path):
+    """
+    Print the description of the dataframe using the RDF interface.
+    """
+
+    file = ROOT.TFile.Open(str(input_path))
+    df = ROOT.RDF.Experimental.FromRNTuple(file["Events"])
     df.Describe().Print()
-    
-if __name__ == '__main__':
+
+
+if __name__ == "__main__":
     main()
