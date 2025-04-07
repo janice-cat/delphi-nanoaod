@@ -14,7 +14,7 @@ skelana_flags:
       IFLPVT: 2         # Primary vertex
       IFLVDR: 1         # refit VD with Z tracks with PV constraint
       IFLFCT: 1         # refit FCA/FCB (RIF)  with PV constraint
-      IFLRNQ: 1         # Run quality selection
+      IFLRNQ: 0         # Run quality selection
       IFLBHP: 1         # Skip the bad 1997 HPC events
       IFLUTE: 1         # Unassociated TE banks
       IFLVDH: 1         # Vertex detector hits
