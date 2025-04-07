@@ -95,7 +95,7 @@ private:
 
     std::shared_ptr<int16_t> nPart_;
     std::shared_ptr<std::vector<XYZTVectorF>> Part_vector_;
-    std::shared_ptr<std::vector<int16_t>> Part_charge_;
+    std::shared_ptr<std::vector<int8_t>> Part_charge_;
     std::shared_ptr<std::vector<int16_t>> Part_pdgId_;
     std::shared_ptr<std::vector<int>> Part_massid_;
     std::shared_ptr<std::vector<int16_t>> Part_jetnr_;
@@ -106,7 +106,7 @@ private:
 
     std::shared_ptr<int16_t> nJet_;
     std::shared_ptr<std::vector<XYZTVectorF>> Jet_vector_;
-    std::shared_ptr<std::vector<int16_t>> Jet_charge_;
+    std::shared_ptr<std::vector<int8_t>> Jet_charge_;
 
     std::shared_ptr<float> Jet_thrust_;
     std::shared_ptr<float> Jet_oblatness_;

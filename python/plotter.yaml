@@ -5,32 +5,69 @@
     Part_pT: "MapRVec(Part_vector,getPt)"
     Part_theta: "MapRVec(Part_vector,getTheta)"
     Part_phi: "MapRVec(Part_vector,getPhi)"
+    Jet_momentum: "MapRVec(Jet_vector,getP)"
+    Jet_pT: "MapRVec(Jet_vector,getPt)"
+    Jet_theta: "MapRVec(Jet_vector,getTheta)"
+    Jet_phi: "MapRVec(Jet_vector,getPhi)"
+
   Histo1D:
-    - name: hadronTag
+    Event_hadronTag:
       title: Team4 Hadron Tag
       bins: [21,-10.5,10.5]
-      varname: Event_hadronTag
-    - name: Event_nChaMultT4
+    Event_nChaMultT4:
       title: Team 4 charged multiplicity
       bins: [51,-0.5,50.5]
-    - name: Event_nChaMult
+    Event_nChaMult:
       title: Charged multiplicity
       bins: [51,-0.5,50.5]
-    - name: Event_nNeuMult
+    Event_nNeuMult:
       title: Neutral multiplicity
       bins: [51,-0.5,50.5]
-    - name: Part_momentum
+    Part_momentum:
       title: Particle momentum
       bins: [100,0.,100.] 
-    - name: Part_pT
+    Part_pT:
       title: Particle pT
       bins: [100,0.,100.]
-    - name: Part_theta
+    Part_theta:
       title: Particle theta
       bins: [100,0.,3.14159]
-    - name: Part_phi
+    Part_phi:
       title: Particle phi
       bins: [100,-3.14159,3.14159]
-    - name: nJet
+    nJet:
       title: Number of jets
       bins: [21,-0.5,20.5]
+    Jet_momentum:
+      title: Jet Momentum
+      bins: [101,-0.5,100.5]
+    Jet_theta:
+      title: Jet Theta
+      bins: [100,0.,3.14159]
+    Jet_phi:
+      title: Jet phi
+      bins: [100,-3.14259,3.14159]
+    Haidn_pionTag:
+      title: Haidn Pion Tag
+      bins: [21,-10.5,10.5]
+    Haidn_kaonTag:
+      title: Haidn Kaon Tag
+      bins: [21,-10.5,10.5]
+    Haidn_protonTag:
+      title: Haidn Proton Tag
+      bins: [21,-10.5,10.5]
+    Haidn_heavyTag:
+      title: Haidn Heavy Tag
+      bins: [21,-10.5,10.5]
+    Haidn_pionTrackSelection:
+      title: Haidn Pion Track Selection
+      bins: [21,-10.5,10.5]
+    Haidn_kaonTrackSelection:
+      title: Haidn Kaon Track Selection
+      bins: [21,-10.5,10.5]
+    Haidn_protonTrackSelection:
+      title: Haidn Proton Track Selection
+      bins: [21,-10.5,10.5]
+    Haidn_heavyTrackSelection:
+      title: Haidn Heavy Track Selection
+      bins: [21,-10.5,10.5]

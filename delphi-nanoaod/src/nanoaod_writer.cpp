@@ -18,14 +18,26 @@ float &APL = psjval_.apl;
 float &THR = psjval_.thr;
 float &OBL = psjval_.obl;
 
-// Fill a vector with n elements using a function f
+// MakeField with type deduction
 template <typename T>
-void fillVector(std::shared_ptr<std::vector<T>> &ptr, int i, int n, std::function<T(int)> f)
+void MakeField(std::unique_ptr<RNTupleModel> &model, const std::string &name, const std::string &description, std::shared_ptr<T> &ptr)
+{
+    ptr = model->MakeField<T>({name, description});
+}    
+
+
+// Fill a vector with n elements using a function f
+template <typename T, typename Func>
+void fillVector(std::shared_ptr<std::vector<T>> &ptr, int i, int n, Func f)
 {
     ptr->clear();
-    std::generate_n(std::back_inserter(*ptr), n, [i, f]() mutable
-                    { return f(i++); });
-};
+    std::generate_n(std::back_inserter(*ptr), n, [i, f]() mutable {
+        return f(i++);
+    });
+}
+
+
+
 
 NanoAODWriter::NanoAODWriter() : output_("nanoaod.root"), mc_(false) {};
 
@@ -142,22 +154,22 @@ void NanoAODWriter::user02()
 
 void NanoAODWriter::defineEvent(std::unique_ptr<RNTupleModel> &model)
 {
-    Event_runNumber_ = model->MakeField<int>({"Event_runNumber", "Run number"});
-    Event_eventNumber_ = model->MakeField<int>({"Event_evtNumber", "Event number"});
-    Event_fillNumber_ = model->MakeField<int>({"Event_fillNumber", "Fill number"});
-    Event_date_ = model->MakeField<int>({"Event_date", "Date"});
-    Event_time_ = model->MakeField<int>({"Event_time", "Time"});
-    Event_magField_ = model->MakeField<float>({"Event_magField", "Magnetic field"});
-    Event_shortDstVersion_ = model->MakeField<int8_t>({"Event_shortDstVersion", "Short DST version"});
-    Event_hadronT4_ = model->MakeField<bool>({"Event_hadronTag", "T4 Hadron tag"});
-    Event_nChaMultT4_ = model->MakeField<int16_t>({"Event_nChaMultT4", "Number of charged particles with T4"});
-    Event_nChaMult_ = model->MakeField<int16_t>({"Event_nChaMult", "Number of charged particles"});
-    Event_nNeuMult_ = model->MakeField<int16_t>({"Event_nNeuMult", "Number of neutral particles"});
-    Event_cmEnergy_ = model->MakeField<float>({"Event_cmEnergy", "Center of mass energy"});
-    Event_totalChaEnergy_ = model->MakeField<float>({"Event_totalChaEnergy", "Total charged energy"});
-    Event_totalEMEnergy_ = model->MakeField<float>({"Event_totalEMEnergy", "Total electromagnetic energy"});
-    Event_totalHadEnergy_ = model->MakeField<float>({"Event_totalHadEnergy", "Total hadronic energy"});
-    Event_DSTType_ = model->MakeField<std::string>({"Event_DSTType", "DST type"});
+    MakeField(model, "Event_runNumber", "Run number", Event_runNumber_);
+    MakeField(model, "Event_evtNumber", "Event number", Event_eventNumber_);
+    MakeField(model, "Event_fillNumber", "Fill number", Event_fillNumber_);
+    MakeField(model, "Event_date", "Date", Event_date_);
+    MakeField(model, "Event_time", "Time", Event_time_);
+    MakeField(model, "Event_magField", "Magnetic field", Event_magField_);
+    MakeField(model, "Event_shortDstVersion", "Short DST version", Event_shortDstVersion_);
+    MakeField(model, "Event_hadronTag", "T4 Hadron tag", Event_hadronT4_);
+    MakeField(model, "Event_nChaMultT4", "Number of charged particles with T4", Event_nChaMultT4_);
+    MakeField(model, "Event_nChaMult", "Number of charged particles", Event_nChaMult_);
+    MakeField(model, "Event_nNeuMult", "Number of neutral particles", Event_nNeuMult_);
+    MakeField(model, "Event_cmEnergy", "Center of mass energy", Event_cmEnergy_);
+    MakeField(model, "Event_totalChaEnergy", "Total charged energy", Event_totalChaEnergy_);
+    MakeField(model, "Event_totalEMEnergy", "Total electromagnetic energy", Event_totalEMEnergy_);
+    MakeField(model, "Event_totalHadEnergy", "Total hadronic energy", Event_totalHadEnergy_);
+    MakeField(model, "Event_DSTType", "DST type", Event_DSTType_);
 }
 
 void NanoAODWriter::fillEvent()
@@ -182,19 +194,19 @@ void NanoAODWriter::fillEvent()
 
 void NanoAODWriter::definePart(std::unique_ptr<RNTupleModel> &model)
 {
-    nPart_ = model->MakeField<int16_t>({"nPart", "Number of particles"});
-    Part_vector_ = model->MakeField<std::vector<XYZTVectorF>>({"Part_vector", "Particle 4-vector"});
-    Part_charge_ = model->MakeField<std::vector<int16_t>>({"Part_charge", "Particle charge"});
-    Part_pdgId_ = model->MakeField<std::vector<int16_t>>({"Part_pdgId", "Particle PDG ID"});
-    Part_massid_ = model->MakeField<std::vector<int>>({"Part_massid", "Particle mass ID"});
-    Part_jetnr_ = model->MakeField<std::vector<int16_t>>({"Part_jetnr", "jet index*1000 + hemisphere index * 100 + vtx code*10 vtx index"});
-    Part_lock_ = model->MakeField<std::vector<int>>({"Part_lock", "Particle lock"});
+    MakeField(model, "nPart", "Number of particles", nPart_);
+    MakeField(model, "Part_vector", "Particle 4-vector", Part_vector_);
+    MakeField(model, "Part_charge", "Particle charge", Part_charge_);
+    MakeField(model, "Part_pdgId", "Particle PDG ID", Part_pdgId_);
+    MakeField(model, "Part_massid", "Particle mass ID", Part_massid_);
+    MakeField(model, "Part_jetnr", "jet index*1000 + hemisphere index * 100 + vtx code*10 vtx index", Part_jetnr_);
+    MakeField(model, "Part_lock", "Particle lock", Part_lock_);
 
     if (mc_ && sk::IFLSIM > 0)
     {
-        Part_simIdx_ = model->MakeField<std::vector<int16_t>>({"Part_simIdx", "Particle simulation index"});
-        Part_originVtxIdx_ = model->MakeField<std::vector<int16_t>>({"Part_originVtxIdx", "Particle origin vertex index"});
-        Part_decayVtxIdx_ = model->MakeField<std::vector<int16_t>>({"Part_decayVtxIdx", "Particle decay vertex index"});
+        MakeField(model, "Part_simIdx", "Particle simulation index", Part_simIdx_);
+        MakeField(model, "Part_originVtxIdx", "Particle origin vertex index", Part_originVtxIdx_);
+        MakeField(model, "Part_decayVtxIdx", "Particle decay vertex index", Part_decayVtxIdx_);;
     }
 
 }
@@ -202,74 +214,74 @@ void NanoAODWriter::definePart(std::unique_ptr<RNTupleModel> &model)
 void NanoAODWriter::fillPart()
 {
     *nPart_ = sk::NVECP;
-    fillVector<XYZTVectorF>(Part_vector_, sk::LVPART, sk::NVECP, [](int i)
+    fillVector(Part_vector_, sk::LVPART, sk::NVECP, [](int i)
                             { return XYZTVectorF(sk::VECP(1, i), sk::VECP(2, i), sk::VECP(3, i), sk::VECP(4, i)); });
-    fillVector<int16_t>(Part_charge_, sk::LVPART, sk::NVECP, [](int i)
+    fillVector(Part_charge_, sk::LVPART, sk::NVECP, [](int i)
                         { return int(sk::VECP(7, i)); });
-    fillVector<int16_t>(Part_pdgId_, sk::LVPART, sk::NVECP, [](int i)
+    fillVector(Part_pdgId_, sk::LVPART, sk::NVECP, [](int i)
                         { return int(sk::VECP(8, i)); });
-    fillVector<int>(Part_massid_, sk::LVPART, sk::NVECP, [](int i)
+    fillVector(Part_massid_, sk::LVPART, sk::NVECP, [](int i)
                     { return sk::VECP(9, i); });
-    fillVector<int16_t>(Part_jetnr_, sk::LVPART, sk::NVECP, [](int i)
+    fillVector(Part_jetnr_, sk::LVPART, sk::NVECP, [](int i)
                         { return sk::VECP(10, i); });
-    fillVector<int>(Part_lock_, sk::LVPART, sk::NVECP, [](int i)
+    fillVector(Part_lock_, sk::LVPART, sk::NVECP, [](int i)
                     { return sk::LVLOCK(i); });
 
     if (mc_ && sk::IFLSIM > 0)
     {
-        fillVector<int16_t>(Part_simIdx_, sk::LVPART, sk::NVECP, [](int i)
+        fillVector(Part_simIdx_, sk::LVPART, sk::NVECP, [](int i)
                             { return sk::IPAST(i) - 1; });
-        fillVector<int16_t>(Part_originVtxIdx_, sk::LVPART, sk::NVECP, [](int i)
+        fillVector(Part_originVtxIdx_, sk::LVPART, sk::NVECP, [](int i)
                             { return sk::IPAPV(1, i) - 1; });
-        fillVector<int16_t>(Part_decayVtxIdx_, sk::LVPART, sk::NVECP, [](int i)
+        fillVector(Part_decayVtxIdx_, sk::LVPART, sk::NVECP, [](int i)
                             { return sk::IPAPV(2, i) - 1; });
     }
 
     if (sk::IFLTRA > 0)
     {
-        fillVector<int16_t>(Part_tracIdx_, sk::LVPART, sk::NVECP, [](int i)
+        fillVector(Part_tracIdx_, sk::LVPART, sk::NVECP, [](int i)
                             { return int(sk::VECP(7, i)) != 0 ? i - 1 : -1; });
     }
 
     if (sk::IFLMUO > 0)
     {
-        fillVector<int16_t>(Part_muidIdx_, sk::LVPART, sk::NVECP, [](int i)
+        fillVector(Part_muidIdx_, sk::LVPART, sk::NVECP, [](int i)
                             { return sk::KMUID(3, i) != 0 ? i - 1 : -1; });
     }
 
     if (sk::IFLELE > 0)
     {
-        fillVector<int16_t>(Part_elidIdx_, sk::LVPART, sk::NVECP, [](int i)
+        fillVector(Part_elidIdx_, sk::LVPART, sk::NVECP, [](int i)
                             { return sk::KELID(1, i) != 0 ? i - 1 : -1; });
     }
 }
 
 void NanoAODWriter::defineJet(std::unique_ptr<RNTupleModel> &model)
 {
-    nJet_ = model->MakeField<int16_t>({"nJet", "Number of jets"});
-    Jet_vector_ = model->MakeField<std::vector<XYZTVectorF>>({"Jet_vector", "Jet 4-vector"});
-    Jet_charge_ = model->MakeField<std::vector<int16_t>>({"Jet_charge", "Jet charge"});
+    MakeField(model, "nJet", "Number of jets", nJet_);
+    MakeField(model, "Jet_vector", "Jet 4-vector", Jet_vector_);
+    MakeField(model, "Jet_charge", "Jet charge", Jet_charge_);
 
     if ((sk::IFLJET / 10) % 10 == 0)
     {
-        Jet_oblatness_ = model->MakeField<float>({"Jet_oblatness", "Jet oblatness"});
-        Jet_thrust_ = model->MakeField<float>({"Jet_thrust", "Jet thrust"});
-        Jet_thrustVector_ = model->MakeField<std::vector<XYZVectorF>>({"Jet_thrustVector", "Jet thrust vector"});
+        MakeField(model, "Jet_oblatness", "Jet oblatness", Jet_oblatness_);
+        MakeField(model, "Jet_thrust", "Jet thrust", Jet_thrust_);
+        MakeField(model, "Jet_thrustVector", "Jet thrust vector", Jet_thrustVector_);
     }
     if ((sk::IFLJET / 100) % 10 == 0)
     {
-        Jet_sphericity_ = model->MakeField<float>({"Jet_sphericity", "Jet sphericity"});
-        Jet_aplanarity_ = model->MakeField<float>({"Jet_aplanarity", "Jet aplanarity"});
-        Jet_sphericityVector_ = model->MakeField<std::vector<XYZVectorF>>({"Jet_sphericityVector", "Jet sphericity vector"});
+        MakeField(model, "Jet_sphericity", "Jet sphericity", Jet_sphericity_);
+        MakeField(model, "Jet_aplanarity", "Jet aplanarity", Jet_aplanarity_);
+        MakeField(model, "Jet_sphericityVector", "Jet sphericity vector", Jet_sphericityVector_);
     }
 }
 
 void NanoAODWriter::fillJet()
 {
     *nJet_ = sk::NJET;
-    fillVector<XYZTVectorF>(Jet_vector_, sk::LVJET+1, sk::NJET, [](int i)
+    fillVector(Jet_vector_, sk::LVJET+1, sk::NJET, [](int i)
                                           { return XYZTVectorF(sk::VECP(1, i), sk::VECP(2, i), sk::VECP(3, i), sk::VECP(4, i)); });
-    fillVector<int16_t>(Jet_charge_, sk::LVJET+1, sk::NJET, [](int i)
+    fillVector(Jet_charge_, sk::LVJET+1, sk::NJET, [](int i)
                                       { return int(sk::VECP(6, i)); });
 
 
@@ -277,7 +289,7 @@ void NanoAODWriter::fillJet()
     {
         *Jet_thrust_ = THR;
         *Jet_oblatness_ = OBL;
-        fillVector<XYZVectorF>(Jet_thrustVector_, sk::LVTHRU, 3, [](int i)
+        fillVector(Jet_thrustVector_, sk::LVTHRU, 3, [](int i)
                                { return XYZVectorF(sk::VECP(1, i), sk::VECP(2, i), sk::VECP(3, i)); });
     }
 
@@ -285,177 +297,176 @@ void NanoAODWriter::fillJet()
     {
         *Jet_sphericity_ = SPH;
         *Jet_aplanarity_ = APL;
-        fillVector<XYZVectorF>(Jet_sphericityVector_, sk::LVSPHE, 3, [](int i)
+        fillVector(Jet_sphericityVector_, sk::LVSPHE, 3, [](int i)
                                { return XYZVectorF(sk::VECP(1, i), sk::VECP(2, i), sk::VECP(3, i)); });
     }
 }
 
 void NanoAODWriter::defineVtx(std::unique_ptr<RNTupleModel> &model)
 {
-    nVtx_ = model->MakeField<int16_t>({"nVtx", "Number of vertices"});
-    Vtx_firstOutIdx_ = model->MakeField<std::vector<int16_t>>({"Vtx_firstOutIdx", "Vertex first outgoing particle index"});
-    Vtx_firstInIdx_ = model->MakeField<std::vector<int16_t>>({"Vtx_firstInIdx", "Vertex first incoming particle index"});
-    Vtx_nOut_ = model->MakeField<std::vector<int16_t>>({"Vtx_nOut", "Vertex number of outgoing particles"});
-    Vtx_ndf_ = model->MakeField<std::vector<int16_t>>({"Vtx_ndf", "Vertex number of degrees of freedom"});
-    Vtx_mcode_ = model->MakeField<std::vector<int16_t>>({"Vtx_mcode", "Vertex MC code"});
-    Vtx_position_ = model->MakeField<std::vector<XYZPointF>>({"Vtx_position", "Vertex position"});
-    Vtx_chi2_ = model->MakeField<std::vector<float>>({"Vtx_chi2", "Vertex chi2"});
-    Vtx_errorMatrix_ = model->MakeField<std::vector<ROOT::Math::SMatrixSym3F>>({"Vtx_errorMatrix", "Vertex error matrix"});
-    Vtx_errorFlag_ = model->MakeField<std::vector<int16_t>>({"Vtx_errorFlag", "Vertex error flag"});
-    Vtx_status_ = model->MakeField<std::vector<int16_t>>({"Vtx_status", "Vertex status"});
+    MakeField(model, "nVtx", "Number of vertices", nVtx_);
+    MakeField(model, "Vtx_firstOutIdx", "Vertex first outgoing particle index", Vtx_firstOutIdx_);
+    MakeField(model, "Vtx_firstInIdx", "Vertex first incoming particle index", Vtx_firstInIdx_);
+    MakeField(model, "Vtx_nOut", "Vertex number of outgoing particles", Vtx_nOut_);
+    MakeField(model, "Vtx_ndf", "Vertex number of degrees of freedom", Vtx_ndf_);
+    MakeField(model, "Vtx_mcode", "Vertex MC code", Vtx_mcode_);
+    MakeField(model, "Vtx_position", "Vertex position", Vtx_position_);
+    MakeField(model, "Vtx_chi2", "Vertex chi2", Vtx_chi2_);
+    MakeField(model, "Vtx_errorMatrix", "Vertex error matrix", Vtx_errorMatrix_);
+    MakeField(model, "Vtx_errorFlag", "Vertex error flag", Vtx_errorFlag_);
+    MakeField(model, "Vtx_status", "Vertex status", Vtx_status_);
 }
 
 void NanoAODWriter::fillVtx()
 {
     *nVtx_ = sk::NVTX;
-    fillVector<int16_t>(Vtx_firstOutIdx_, 1, sk::NVTX, [](int i)
+    fillVector(Vtx_firstOutIdx_, 1, sk::NVTX, [](int i)
                         { return sk::KVTX(1, i); });
-    fillVector<int16_t>(Vtx_firstInIdx_, 1, sk::NVTX, [](int i)
+    fillVector(Vtx_firstInIdx_, 1, sk::NVTX, [](int i)
                         { return sk::KVTX(2, i); });
-    fillVector<int16_t>(Vtx_nOut_, 1, sk::NVTX, [](int i)
+    fillVector(Vtx_nOut_, 1, sk::NVTX, [](int i)
                         { return sk::KVTX(3, i); });
-    fillVector<int16_t>(Vtx_ndf_, 1, sk::NVTX, [](int i)
+    fillVector(Vtx_ndf_, 1, sk::NVTX, [](int i)
                         { return sk::KVTX(4, i); });
-    fillVector<int16_t>(Vtx_mcode_, 1, sk::NVTX, [](int i)
+    fillVector(Vtx_mcode_, 1, sk::NVTX, [](int i)
                         { return sk::KVTX(5, i); });
-    fillVector<XYZPointF>(Vtx_position_, 1, sk::NVTX, [](int i)
+    fillVector(Vtx_position_, 1, sk::NVTX, [](int i)
                           { return XYZPointF(sk::QVTX(6, i), sk::QVTX(7, i), sk::QVTX(8, i)); });
-    fillVector<float>(Vtx_chi2_, 1, sk::NVTX, [](int i)
+    fillVector(Vtx_chi2_, 1, sk::NVTX, [](int i)
                       { return sk::QVTX(9, i); });
-    fillVector<ROOT::Math::SMatrixSym3F>(Vtx_errorMatrix_, 1, sk::NVTX, [](int i)
+    fillVector(Vtx_errorMatrix_, 1, sk::NVTX, [](int i)
                                          { return ROOT::Math::SMatrixSym3F(&sk::QVTX(10, i), 6); });
-    fillVector<int16_t>(Vtx_errorFlag_, 1, sk::NVTX, [](int i)
+    fillVector(Vtx_errorFlag_, 1, sk::NVTX, [](int i)
                         { return sk::KVTX(16, i); });
-    fillVector<int16_t>(Vtx_status_, 1, sk::NVTX, [](int i)
+    fillVector(Vtx_status_, 1, sk::NVTX, [](int i)
                         { return sk::KVTX(17, i); });
 }
 
 void NanoAODWriter::defineSimPart(std::unique_ptr<RNTupleModel> &model)
 {
-    nSimPart_ = model->MakeField<int16_t>({"nSimPart", "Number of simulated particles"});
-    SimPart_vector_ = model->MakeField<std::vector<XYZTVectorF>>({"SimPart_vector", "Simulated particle vector"});
-    SimPart_pdgId_ = model->MakeField<std::vector<int16_t>>({"SimPart_pdgId", "Simulated particle PDG ID"});
-    SimPart_partIdx_ = model->MakeField<std::vector<int16_t>>({"SimPart_partIdx", "Simulated particle index"});
-    SimPart_genIdx_ = model->MakeField<std::vector<int16_t>>({"SimPart_genIdx", "Simulated particle generation index"});
-    SimPart_originVtxIdx_ = model->MakeField<std::vector<int16_t>>({"SimPart_originVtxIdx", "Simulated particle origin vertex index"});
-    SimPart_decayVtxIdx_ = model->MakeField<std::vector<int16_t>>({"SimPart_decayVtxIdx", "Simulated particle decay vertex index"});
+    MakeField(model, "nSimPart", "Number of simulated particles", nSimPart_);
+    MakeField(model, "SimPart_vector", "Simulated particle vector", SimPart_vector_);
+    MakeField(model, "SimPart_pdgId", "Simulated particle PDG ID", SimPart_pdgId_);
+    MakeField(model, "SimPart_partIdx", "Simulated particle index", SimPart_partIdx_);
+    MakeField(model, "SimPart_genIdx", "Simulated particle generation index", SimPart_genIdx_);
+    MakeField(model, "SimPart_originVtxIdx", "Simulated particle origin vertex index", SimPart_originVtxIdx_);
+    MakeField(model, "SimPart_decayVtxIdx", "Simulated particle decay vertex index", SimPart_decayVtxIdx_);
 }
 
 void NanoAODWriter::fillSimPart()
 {
     *nSimPart_ = sk::NVECMC;
-    fillVector<XYZTVectorF>(SimPart_vector_, sk::MTRACK + sk::LVPART, sk::NVECMC, [](int i)
+    fillVector(SimPart_vector_, sk::MTRACK + sk::LVPART, sk::NVECMC, [](int i)
                             { return XYZTVectorF(sk::VECP(1, i), sk::VECP(2, i), sk::VECP(3, i), sk::VECP(4, i)); });
-    fillVector<int16_t>(SimPart_pdgId_, sk::MTRACK + sk::LVPART, sk::NVECMC, [](int i)
+    fillVector(SimPart_pdgId_, sk::MTRACK + sk::LVPART, sk::NVECMC, [](int i)
                         { return int(sk::VECP(6, i)); });
-    fillVector<int16_t>(SimPart_partIdx_, sk::MTRACK + sk::LVPART, sk::NVECMC, [](int i)
+    fillVector(SimPart_partIdx_, sk::MTRACK + sk::LVPART, sk::NVECMC, [](int i)
                         { return sk::ISTPA(i) - 1; });
-    fillVector<int16_t>(SimPart_genIdx_, sk::MTRACK + sk::LVPART, sk::NVECMC, [](int i)
+    fillVector(SimPart_genIdx_, sk::MTRACK + sk::LVPART, sk::NVECMC, [](int i)
                         { return sk::ISTLU(i) - 1; });
-    fillVector<int16_t>(SimPart_originVtxIdx_, sk::MTRACK + sk::LVPART, sk::NVECMC, [](int i)
+    fillVector(SimPart_originVtxIdx_, sk::MTRACK + sk::LVPART, sk::NVECMC, [](int i)
                         { return sk::ISTVX(1, i) - 1; });
-    fillVector<int16_t>(SimPart_decayVtxIdx_, sk::MTRACK + sk::LVPART, sk::NVECMC, [](int i)
+    fillVector(SimPart_decayVtxIdx_, sk::MTRACK + sk::LVPART, sk::NVECMC, [](int i)
                         { return sk::ISTVX(2, i) - 1; });
 }
 
 void NanoAODWriter::defineGenPart(std::unique_ptr<RNTupleModel> &model)
 {
-    nGenPart_ = model->MakeField<int16_t>({"nGenPart", "Number of generated particles"});
-    GenPart_status_ = model->MakeField<std::vector<int16_t>>({"GenPart_status", "Generated particle status"});
-    GenPart_pdgId_ = model->MakeField<std::vector<int16_t>>({"GenPart_pdgId", "Generated particle PDG ID"});
-    GenPart_parentIdx_ = model->MakeField<std::vector<int16_t>>({"GenPart_parentIdx", "Generated particle parent index"});
-    GenPart_firstChildIdx_ = model->MakeField<std::vector<int16_t>>({"GenPart_firstChildIdx", "Generated particle first child index"});
-    GenPart_lastChildIdx_ = model->MakeField<std::vector<int16_t>>({"GenPart_lastChildIdx", "Generated particle last child index"});
-    GenPart_vector_ = model->MakeField<std::vector<XYZTVectorF>>({"GenPart_vector", "Generated particle vector"});
-    GenPart_vertex_ = model->MakeField<std::vector<XYZTVectorF>>({"GenPart_vertex", "Generated particle vertex"});
-    GenPart_tau_ = model->MakeField<std::vector<float>>({"GenPart_tau", "Generated particle lifetime"});
-    GenPart_simIdx_ = model->MakeField<std::vector<int16_t>>({"GenPart_simIdx", "Generated particle simulation index"});
+    MakeField(model, "nGenPart", "Number of generated particles", nGenPart_);
+    MakeField(model, "GenPart_status", "Generated particle status", GenPart_status_);
+    MakeField(model, "GenPart_pdgId", "Generated particle PDG ID", GenPart_pdgId_);
+    MakeField(model, "GenPart_parentIdx", "Generated particle parent index", GenPart_parentIdx_);
+    MakeField(model, "GenPart_firstChildIdx", "Generated particle first child index", GenPart_firstChildIdx_);
+    MakeField(model, "GenPart_lastChildIdx", "Generated particle last child index", GenPart_lastChildIdx_);
+    MakeField(model, "GenPart_vector", "Generated particle vector", GenPart_vector_);
+    MakeField(model, "GenPart_vertex", "Generated particle vertex", GenPart_vertex_);
+    MakeField(model, "GenPart_tau", "Generated particle lifetime", GenPart_tau_);
+    MakeField(model, "GenPart_simIdx", "Generated particle simulation index", GenPart_simIdx_);
 }
 
 void NanoAODWriter::fillGenPart()
 {
     *nGenPart_ = sk::NP;
-    fillVector<int16_t>(GenPart_status_, 1, sk::NP, [](int i)
+    fillVector(GenPart_status_, 1, sk::NP, [](int i)
                         { return sk::KP(i, 1); });
-    fillVector<int16_t>(GenPart_pdgId_, 1, sk::NP, [](int i)
+    fillVector(GenPart_pdgId_, 1, sk::NP, [](int i)
                         { return sk::KP(i, 2); });
-    fillVector<int16_t>(GenPart_parentIdx_, 1, sk::NP, [](int i)
+    fillVector(GenPart_parentIdx_, 1, sk::NP, [](int i)
                         { return sk::KP(i, 3); });
-    fillVector<int16_t>(GenPart_firstChildIdx_, 1, sk::NP, [](int i)
+    fillVector(GenPart_firstChildIdx_, 1, sk::NP, [](int i)
                         { return sk::KP(i, 4); });
-    fillVector<int16_t>(GenPart_lastChildIdx_, 1, sk::NP, [](int i)
+    fillVector(GenPart_lastChildIdx_, 1, sk::NP, [](int i)
                         { return sk::KP(i, 5); });
-    fillVector<XYZTVectorF>(GenPart_vector_, 1, sk::NP, [](int i)
+    fillVector(GenPart_vector_, 1, sk::NP, [](int i)
                             { return XYZTVectorF(sk::PP(i, 1), sk::PP(i, 2), sk::PP(i, 3), sk::PP(i, 4)); });
-    fillVector<XYZTVectorF>(GenPart_vertex_, 1, sk::NP, [](int i)
+    fillVector(GenPart_vertex_, 1, sk::NP, [](int i)
                             { return XYZTVectorF(sk::VP(i, 1), sk::VP(i, 2), sk::VP(i, 3), sk::VP(i, 4)); });
-    fillVector<float>(GenPart_tau_, 1, sk::NP, [](int i)
+    fillVector(GenPart_tau_, 1, sk::NP, [](int i)
                       { return sk::VP(i, 5); });
-    fillVector<int16_t>(GenPart_simIdx_, 1, sk::NP, [](int i)
+    fillVector(GenPart_simIdx_, 1, sk::NP, [](int i)
                         { return sk::ILUST(i) - 1; });
 }
 
 void NanoAODWriter::defineSimVtx(std::unique_ptr<RNTupleModel> &model)
 {
-    nSimVtx_ = model->MakeField<int16_t>({"nSimVtx", "Number of simulated vertices"});
-    SimVtx_firstOutIdx_ = model->MakeField<std::vector<int16_t>>({"SimVtx_firstOutIdx", "Simulated vertex first outgoing particle index"});
-    SimVtx_firstInIdx_ = model->MakeField<std::vector<int16_t>>({"SimVtx_firstInIdx", "Simulated vertex first incoming particle index"});
-    SimVtx_nOut_ = model->MakeField<std::vector<int16_t>>({"SimVtx_nOut", "Simulated vertex number of outgoing particles"});
-    SimVtx_mcode_ = model->MakeField<std::vector<int16_t>>({"SimVtx_mcode", "Simulated vertex MC code"});
-    SimVtx_vertex_ = model->MakeField<std::vector<XYZPointF>>({"SimVtx_vertex", "Simulated vertex"});
-    SimVtx_errorFlag_ = model->MakeField<std::vector<int16_t>>({"SimVtx_errorFlag", "Simulated vertex error flag"});
-    SimVtx_status_ = model->MakeField<std::vector<int16_t>>({"SimVtx_status", "Simulated vertex status"});
+    MakeField(model, "nSimVtx", "Number of simulated vertices", nSimVtx_);
+    MakeField(model, "SimVtx_firstOutIdx", "Simulated vertex first outgoing particle index", SimVtx_firstOutIdx_);
+    MakeField(model, "SimVtx_firstInIdx", "Simulated vertex first incoming particle index", SimVtx_firstInIdx_);
+    MakeField(model, "SimVtx_nOut", "Simulated vertex number of outgoing particles", SimVtx_nOut_);
+    MakeField(model, "SimVtx_mcode", "Simulated vertex MC code", SimVtx_mcode_);
+    MakeField(model, "SimVtx_vertex", "Simulated vertex", SimVtx_vertex_);
+    MakeField(model, "SimVtx_errorFlag", "Simulated vertex error flag", SimVtx_errorFlag_);
+    MakeField(model, "SimVtx_status", "Simulated vertex status", SimVtx_status_);
 }
 
 void NanoAODWriter::fillSimVtx()
 {
     *nSimVtx_ = sk::NVTXMC;
-    fillVector<int16_t>(SimVtx_firstOutIdx_, sk::NVTXMX + 1, sk::NVTXMC, [](int i)
+    fillVector(SimVtx_firstOutIdx_, sk::NVTXMX + 1, sk::NVTXMC, [](int i)
                         { return sk::KVTX(1, i) - 1; });
-    fillVector<int16_t>(SimVtx_firstInIdx_, sk::NVTXMX + 1, sk::NVTXMC, [](int i)
+    fillVector(SimVtx_firstInIdx_, sk::NVTXMX + 1, sk::NVTXMC, [](int i)
                         { return sk::KVTX(2, i) - 1; });
-    fillVector<int16_t>(SimVtx_nOut_, sk::NVTXMX + 1, sk::NVTXMC, [](int i)
+    fillVector(SimVtx_nOut_, sk::NVTXMX + 1, sk::NVTXMC, [](int i)
                         { return sk::KVTX(3, i); });
-    fillVector<int16_t>(SimVtx_mcode_, sk::NVTXMX + 1, sk::NVTXMC, [](int i)
+    fillVector(SimVtx_mcode_, sk::NVTXMX + 1, sk::NVTXMC, [](int i)
                         { return sk::KVTX(4, i); });
-    fillVector<XYZPointF>(SimVtx_vertex_, sk::NVTXMX + 1, sk::NVTXMC, [](int i)
+    fillVector(SimVtx_vertex_, sk::NVTXMX + 1, sk::NVTXMC, [](int i)
                           { return XYZPointF(sk::QVTX(1, i), sk::QVTX(2, i), sk::QVTX(3, i)); });
-    fillVector<int16_t>(SimVtx_errorFlag_, sk::NVTXMX + 1, sk::NVTXMC, [](int i)
+    fillVector(SimVtx_errorFlag_, sk::NVTXMX + 1, sk::NVTXMC, [](int i)
                         { return sk::KVTX(16, i); });
-    fillVector<int16_t>(SimVtx_status_, sk::NVTXMX + 1, sk::NVTXMC, [](int i)
+    fillVector(SimVtx_status_, sk::NVTXMX + 1, sk::NVTXMC, [](int i)
                         { return sk::KVTX(17, i); });
 }
 
 void NanoAODWriter::defineTrac(std::unique_ptr<RNTupleModel> &model)
 {
-    Part_tracIdx_ = model->MakeField<std::vector<int16_t>>({"Part_tracIdx", "Particle track index"});
-    Trac_originVtxIdx_ = model->MakeField<std::vector<int16_t>>({"Trac_originVtxIdx", "Track origin vertex index"});
-    Trac_decayVtxIdx_ = model->MakeField<std::vector<int16_t>>({"Trac_decayVtxIdx", "Track decay vertex index"});
-    Trac_impactParRPhi_ = model->MakeField<std::vector<float>>({"Trac_impactParRPhi", "Track impact parameter RPhi"});
-    Trac_impactParZ_ = model->MakeField<std::vector<float>>({"Trac_impactParZ", "Track impact parameter Z"});
-    Trac_thetaPerigee_ = model->MakeField<std::vector<float>>({"Trac_thetaPerigee", "Track theta perigee"});
-    Trac_phiPerigee_ = model->MakeField<std::vector<float>>({"Trac_phiPerigee", "Track phi perigee"});
-    Trac_curvaturePerigee_ = model->MakeField<std::vector<float>>({"Trac_curvaturePerigee", "Track curvature perigee"});
-    Trac_weightMatrix_ = model->MakeField<std::vector<ROOT::Math::SMatrixSym5F>>({"Trac_weightMatrix", "Track weight matrix"});
-    Trac_length_ = model->MakeField<std::vector<float>>({"Trac_length", "Track length"});
-    Trac_detectors_ = model->MakeField<std::vector<int16_t>>({"Trac_detectors", "Track detectors"});
-    Trac_rFirstPoint_ = model->MakeField<std::vector<float>>({"Trac_rFirstPoint", "Track first point radius"});
-    Trac_zFirstPoint_ = model->MakeField<std::vector<float>>({"Trac_zFirstPoint", "Track first point z"});
-    Trac_chi2NoVD_ = model->MakeField<std::vector<float>>({"Trac_chi2NoVD", "Track chi2 no vertex detector"});
-    Trac_chi2VD_ = model->MakeField<std::vector<float>>({"Trac_chi2VD", "Track chi2 vertex detector"});
-    Trac_ndfNoVD_ = model->MakeField<std::vector<int16_t>>({"Trac_ndfNoVD", "Track ndf no vertex detector"});
-    Trac_ndfVD_ = model->MakeField<std::vector<int16_t>>({"Trac_ndfVD", "Track ndf vertex detector"});
-    Trac_nHitVDRPhi_ = model->MakeField<std::vector<int16_t>>({"Trac_nHitVDRPhi", "Track number of hits in vertex detector RPhi"});
-    Trac_nHitVDZ_ = model->MakeField<std::vector<int16_t>>({"Trac_nHitVDZ", "Track number of hits in vertex detector Z"});
-    Trac_resRPhiFirstPoint_ = model->MakeField<std::vector<float>>({"Trac_resRPhiFirstPoint", "Track residual RPhi first point"});
-    Trac_errorResRPhiFirstPoint_ = model->MakeField<std::vector<float>>({"Trac_errorResRPhiFirstPoint", "Track error residual RPhi first point"});
-    Trac_resZFirstPoint_ = model->MakeField<std::vector<float>>({"Trac_resZFirstPoint", "Track residual Z first point"});
-    Trac_errorResZFirstPoint_ = model->MakeField<std::vector<float>>({"Trac_errorResZFirstPoint", "Track error residual Z first point"});
-    Trac_impactParameterBeamSpotGeomSign_ = model->MakeField<std::vector<float>>({"Trac_impactParameterBeamSpotGeomSign", "Track impact parameter beam spot geometric sign"});
-    Trac_impactParameterZGeomSign_ = model->MakeField<std::vector<float>>({"Trac_impactParameterZGeomSign", "Track impact parameter Z geometric sign"});
-    Trac_impactParameterVertexGeomSign_ = model->MakeField<std::vector<float>>({"Trac_impactParameterVertexGeomSign", "Track impact parameter vertex geometric sign"});
-    // Trac_energyError_ = model->MakeField<std::vector<float>>({"Trac_energyError", "Track energy error"});
-    Trac_chi2VDHits_ = model->MakeField<std::vector<float>>({"Trac_chi2VDHits", "Chi2 vertex detector"});
+    MakeField(model, "Part_tracIdx", "Particle track index", Part_tracIdx_);
+    MakeField(model, "Trac_originVtxIdx", "Track origin vertex index", Trac_originVtxIdx_);
+    MakeField(model, "Trac_decayVtxIdx", "Track decay vertex index", Trac_decayVtxIdx_);
+    MakeField(model, "Trac_impactParRPhi", "Track impact parameter RPhi", Trac_impactParRPhi_);
+    MakeField(model, "Trac_impactParZ", "Track impact parameter Z", Trac_impactParZ_);
+    MakeField(model, "Trac_thetaPerigee", "Track theta perigee", Trac_thetaPerigee_);
+    MakeField(model, "Trac_phiPerigee", "Track phi perigee", Trac_phiPerigee_);
+    MakeField(model, "Trac_curvaturePerigee", "Track curvature perigee", Trac_curvaturePerigee_);
+    MakeField(model, "Trac_weightMatrix", "Track weight matrix", Trac_weightMatrix_);
+    MakeField(model, "Trac_length", "Track length", Trac_length_);
+    MakeField(model, "Trac_detectors", "Track detectors", Trac_detectors_);
+    MakeField(model, "Trac_rFirstPoint", "Track first point radius", Trac_rFirstPoint_);
+    MakeField(model, "Trac_zFirstPoint", "Track first point z", Trac_zFirstPoint_);
+    MakeField(model, "Trac_chi2NoVD", "Track chi2 no vertex detector", Trac_chi2NoVD_);
+    MakeField(model, "Trac_chi2VD", "Track chi2 vertex detector", Trac_chi2VD_);
+    MakeField(model, "Trac_ndfNoVD", "Track ndf no vertex detector", Trac_ndfNoVD_);
+    MakeField(model, "Trac_ndfVD", "Track ndf vertex detector", Trac_ndfVD_);
+    MakeField(model, "Trac_nHitVDRPhi", "Track number of hits in vertex detector RPhi", Trac_nHitVDRPhi_);
+    MakeField(model, "Trac_nHitVDZ", "Track number of hits in vertex detector Z", Trac_nHitVDZ_);
+    MakeField(model, "Trac_resRPhiFirstPoint", "Track residual RPhi first point", Trac_resRPhiFirstPoint_);
+    MakeField(model, "Trac_errorResRPhiFirstPoint", "Track error residual RPhi first point", Trac_errorResRPhiFirstPoint_);
+    MakeField(model, "Trac_resZFirstPoint", "Track residual Z first point", Trac_resZFirstPoint_);
+    MakeField(model, "Trac_errorResZFirstPoint", "Track error residual Z first point", Trac_errorResZFirstPoint_);
+    MakeField(model, "Trac_impactParameterBeamSpotGeomSign", "Track impact parameter beam spot geometric sign", Trac_impactParameterBeamSpotGeomSign_);
+    MakeField(model, "Trac_impactParameterZGeomSign", "Track impact parameter Z geometric sign", Trac_impactParameterZGeomSign_);
+    MakeField(model, "Trac_impactParameterVertexGeomSign", "Track impact parameter vertex geometric sign", Trac_impactParameterVertexGeomSign_);
+    MakeField(model, "Trac_chi2VDHits", "Chi2 vertex detector", Trac_chi2VDHits_);
 }
 
 void NanoAODWriter::fillTrac()
@@ -485,7 +496,6 @@ void NanoAODWriter::fillTrac()
     Trac_impactParameterBeamSpotGeomSign_->clear();
     Trac_impactParameterZGeomSign_->clear();
     Trac_impactParameterVertexGeomSign_->clear();
-    // Trac_energyError_->clear();
     Trac_chi2VDHits_->clear();
 
     for (int i = sk::LVPART; i <= sk::NVECP; i++)
@@ -517,7 +527,6 @@ void NanoAODWriter::fillTrac()
             Trac_impactParameterBeamSpotGeomSign_-> push_back(sk::QTRAC(38, i));
             Trac_impactParameterZGeomSign_-> push_back(sk::QTRAC(39, i));
             Trac_impactParameterVertexGeomSign_-> push_back(sk::QTRAC(40, i));
-            // Trac_energyError_-> push_back(sk::QTRAC(41, i));
             Trac_chi2VDHits_-> push_back(sk::QTRAC(42, i));
         }
     }
@@ -525,10 +534,10 @@ void NanoAODWriter::fillTrac()
 
 void NanoAODWriter::defineMuid(std::unique_ptr<RNTupleModel> &model)
 {
-    Part_muidIdx_ = model->MakeField<std::vector<int16_t>>({"Part_muidIdx", "Particle muon ID index"});
-    Muid_tag_ = model->MakeField<std::vector<int>>({"Muid_tag", "Muon ID tag"});
-    Muid_looseChi2_ = model->MakeField<std::vector<float>>({"Muid_looseChi2", "Muon ID loose chi2"});
-    Muid_hitPattern_ = model->MakeField<std::vector<int16_t>>({"Muid_hitPattern", "Muon ID hit pattern"});
+    MakeField(model, "Part_muidIdx", "Particle muon ID index", Part_muidIdx_);
+    MakeField(model, "Muid_tag", "Muon ID tag", Muid_tag_);
+    MakeField(model, "Muid_looseChi2", "Muon ID loose chi2", Muid_looseChi2_);
+    MakeField(model, "Muid_hitPattern", "Muon ID hit pattern", Muid_hitPattern_);
 }
 
 void NanoAODWriter::fillMuid()
@@ -549,12 +558,12 @@ void NanoAODWriter::fillMuid()
 
 void NanoAODWriter::defineElid(std::unique_ptr<RNTupleModel> &model)
 {
-    Part_elidIdx_ = model->MakeField<std::vector<int16_t>>({"Part_elidIdx", "Particle electron ID index"});
-    Elid_tag_ = model->MakeField<std::vector<int>>({"Elec_tag", "Electron ID tag"});
-    Elid_gammaConversion_ = model->MakeField<std::vector<int16_t>>({"Elec_gammaConversion", "Electron ID gamma conversion"});
-    Elid_px_ = model->MakeField<std::vector<float>>({"Elec_px", "Best electron px estimation"});
-    Elid_py_ = model->MakeField<std::vector<float>>({"Elec_py", "Best electron py estimation"});
-    Elid_pz_ = model->MakeField<std::vector<float>>({"Elec_pz", "Best electron pz estimation"});
+    MakeField(model, "Part_elidIdx", "Particle electron ID index", Part_elidIdx_);
+    MakeField(model, "Elid_tag", "Electron ID tag", Elid_tag_);
+    MakeField(model, "Elid_gammaConversion", "Electron ID gamma conversion", Elid_gammaConversion_);
+    MakeField(model, "Elid_px", "Best electron px estimation", Elid_px_);
+    MakeField(model, "Elid_py", "Best electron py estimation", Elid_py_);
+    MakeField(model, "Elid_pz", "Best electron pz estimation", Elid_pz_);
 }
 
 void NanoAODWriter::fillElid()
@@ -579,73 +588,84 @@ void NanoAODWriter::fillElid()
 
 void NanoAODWriter::defineBtag(std::unique_ptr<RNTupleModel> &model)
 {
-    Btag_probNegIP_ = model->MakeField<std::vector<float>>({"Btag_probNegIP", "B-tagging probability for tracks with negative impact parameter, hemisphere 1"}); 
-    Btag_probPosIP_ = model->MakeField<std::vector<float>>({"Btag_probPosIP", "B-tagging probability for tracks with negative impact parameter, hemisphere 2"});
-    Btag_probAllIP_ = model->MakeField<std::vector<float>>({"Btag_probAllIP", "B-tagging probability for tracks with negative impact parameter, whole event"});
-    Btag_thrustVector_ = model->MakeField<XYZVectorF>({"Btag_thrustVector", "B-tagging probability for tracks with positive impact parameter, hemisphere 1"});
+    MakeField(model, "Btag_probNegIP", "B-tagging probability for tracks with negative impact parameter, hemisphere 1", Btag_probNegIP_);
+    MakeField(model, "Btag_probPosIP", "B-tagging probability for tracks with negative impact parameter, hemisphere 2", Btag_probPosIP_);
+    MakeField(model, "Btag_probAllIP", "B-tagging probability for tracks with negative impact parameter, whole event", Btag_probAllIP_);
+    MakeField(model, "Btag_thrustVector", "B-tagging probability for tracks with positive impact parameter, hemisphere 1", Btag_thrustVector_);
 }
+
+void NanoAODWriter::fillBtag()
+{
+    fillVector(Btag_probNegIP_, 1, 3, [](int i)
+                      { return sk::QBTPRN(i); });
+    fillVector(Btag_probPosIP_, 1, 3, [](int i)
+                      { return sk::QBTPRP(i); });
+    fillVector(Btag_probAllIP_, 1, 3, [](int i)
+                      { return sk::QBTPRS(i); });
+
+    *Btag_thrustVector_ = XYZVectorF(sk::QBTTHR(1), sk::QBTTHR(2), sk::QBTTHR(3));
+}   
 
 void NanoAODWriter::defineHadid(std::unique_ptr<RNTupleModel> &model)
 {
-    Haid_sign_ = model->MakeField<std::vector<int>>({"Haid_sign", "Used for combined tag"});
-    Haid_kaonDedx_ = model->MakeField<std::vector<int>>({"Haid_kaonDedx", "Kaon signature with DEDX"});
-    Haid_protonDedx_ = model->MakeField<std::vector<int>>({"Haid_protonDedx", "Proton signature with DEDX"});
-    Haid_kaonRich_ = model->MakeField<std::vector<int>>({"Haid_kaonRich", "Kaon signature with RICH"});
-    Haid_protonRich_ = model->MakeField<std::vector<int>>({"Haid_protonRich", "Proton signature with RICH"});
-    Haid_pionRich_= model->MakeField<std::vector<int>>({"Haid_pionRich", "Pion singnature with RICH"});    
-    Haid_kaonCombined_ = model->MakeField<std::vector<float>>({"Haid_kaonCombined", "Kaon signature with combined tag"});    
-    Haid_protonCombined_ = model->MakeField<std::vector<float>>({"Haid_protonCombined", "Proton signature with combined tag"});
-    Haid_richQuality_ = model->MakeField<std::vector<int>>({"Haid_richQuality", "RICH quality status"});
+    MakeField(model, "Haid_sign", "Used for combined tag", Haid_sign_);
+    MakeField(model, "Haid_kaonDedx", "Kaon signature with DEDX", Haid_kaonDedx_);
+    MakeField(model, "Haid_protonDedx", "Proton signature with DEDX", Haid_protonDedx_);
+    MakeField(model, "Haid_kaonRich", "Kaon signature with RICH", Haid_kaonRich_);
+    MakeField(model, "Haid_protonRich", "Proton signature with RICH", Haid_protonRich_);
+    MakeField(model, "Haid_pionRich", "Pion signature with RICH", Haid_pionRich_);
+    MakeField(model, "Haid_kaonCombined", "Kaon signature with combined tag", Haid_kaonCombined_);
+    MakeField(model, "Haid_protonCombined", "Proton signature with combined tag", Haid_protonCombined_);
+    MakeField(model, "Haid_richQuality", "RICH quality status", Haid_richQuality_);
 
-    Haidn_pionTag_ = model->MakeField<std::vector<int8_t>>({"Haidn_pionTag", "Pion tag"});
-    Haidn_kaonTag_ = model->MakeField<std::vector<int8_t>>({"Haidn_kaonTag", "Kaon tag"});
-    Haidn_protonTag_ = model->MakeField<std::vector<int8_t>>({"Haidn_protonTag", "Proton tag"});
-    Haidn_heavyTag_ = model->MakeField<std::vector<int8_t>>({"Haidn_heavyTag", "Heavy particle tag"});
-    Haidn_pionTrackSelection_ = model->MakeField<std::vector<int8_t>>({"Haidn_pionTrackSelection", "Pion track selection"});
-    Haidn_kaonTrackSelection_ = model->MakeField<std::vector<int8_t>>({"Haidn_kaonTrackSelection", "Kaon track selection"});   
-    Haidn_protonTrackSelection_ = model->MakeField<std::vector<int8_t>>({"Haidn_protonTrackSelection", "Proton track selection"}); 
-    Haidn_heavyTrackSelection_ = model->MakeField<std::vector<int8_t>>({"Haidn_heavyTrackSelection", "Heavy particle track selection"});   
+    MakeField(model, "Haidn_pionTag", "Pion tag", Haidn_pionTag_);
+    MakeField(model, "Haidn_kaonTag", "Kaon tag", Haidn_kaonTag_);
+    MakeField(model, "Haidn_protonTag", "Proton tag", Haidn_protonTag_);
+    MakeField(model, "Haidn_heavyTag", "Heavy particle tag", Haidn_heavyTag_);
+    MakeField(model, "Haidn_pionTrackSelection", "Pion track selection", Haidn_pionTrackSelection_);
+    MakeField(model, "Haidn_kaonTrackSelection", "Kaon track selection", Haidn_kaonTrackSelection_);
+    MakeField(model, "Haidn_protonTrackSelection", "Proton track selection", Haidn_protonTrackSelection_);
+    MakeField(model, "Haidn_heavyTrackSelection", "Heavy particle track selection", Haidn_heavyTrackSelection_);
 
-    Haidr_pionTag_ = model->MakeField<std::vector<int8_t>>({"Haidr_pionTag", "Pion tag"});
-    Haidr_kaonTag_ = model->MakeField<std::vector<int8_t>>({"Haidr_kaonTag", "Kaon tag"});
-    Haidr_protonTag_ = model->MakeField<std::vector<int8_t>>({"Haidr_protonTag", "Proton tag"});
-    Haidr_heavyTag_ = model->MakeField<std::vector<int8_t>>({"Haidr_heavyTag", "Heavy particle tag"});
-    Haidr_electronTag_ = model->MakeField<std::vector<int8_t>>({"Haidr_electronTag", "Electron tag"});
-    Haidr_selectionFlag_ = model->MakeField<std::vector<int8_t>>({"Haidr_selectionFlag", "Selection flag"});
+    MakeField(model, "Haidr_pionTag", "Pion tag", Haidr_pionTag_);
+    MakeField(model, "Haidr_kaonTag", "Kaon tag", Haidr_kaonTag_);
+    MakeField(model, "Haidr_protonTag", "Proton tag", Haidr_protonTag_);
+    MakeField(model, "Haidr_heavyTag", "Heavy particle tag", Haidr_heavyTag_);
+    MakeField(model, "Haidr_electronTag", "Electron tag", Haidr_electronTag_);
+    MakeField(model, "Haidr_selectionFlag", "Selection flag", Haidr_selectionFlag_);
 
-    Haide_pionTag_ = model->MakeField<std::vector<int8_t>>({"Haide_pionTag", "Pion tag"});
-    Haide_kaonTag_ = model->MakeField<std::vector<int8_t>>({"Haide_kaonTag", "Kaon tag"});
-    Haide_protonTag_ = model->MakeField<std::vector<int8_t>>({"Haide_protonTag", "Proton tag"});
-    Haide_heavyTag_ = model->MakeField<std::vector<int8_t>>({"Haide_heavyTag", "Heavy particle tag"});
-    Haide_electronTag_ = model->MakeField<std::vector<int8_t>>({"Haide_electronTag", "Electron tag"});
-    Haide_selectionFlag_ = model->MakeField<std::vector<int8_t>>({"Haide_selectionFlag", "Selection flag"});
+    MakeField(model, "Haide_pionTag", "Pion tag", Haide_pionTag_);
+    MakeField(model, "Haide_kaonTag", "Kaon tag", Haide_kaonTag_);
+    MakeField(model, "Haide_protonTag", "Proton tag", Haide_protonTag_);
+    MakeField(model, "Haide_heavyTag", "Heavy particle tag", Haide_heavyTag_);
+    MakeField(model, "Haide_electronTag", "Electron tag", Haide_electronTag_);
+    MakeField(model, "Haide_selectionFlag", "Selection flag", Haide_selectionFlag_);
 
-    Haidc_pionTag_ = model->MakeField<std::vector<int8_t>>({"Haidc_pionTag", "Pion tag"});
-    Haidc_kaonTag_ = model->MakeField<std::vector<int8_t>>({"Haidc_kaonTag", "Kaon tag"});
-    Haidc_protonTag_ = model->MakeField<std::vector<int8_t>>({"Haidc_protonTag", "Proton tag"});
-    Haidc_heavyTag_ = model->MakeField<std::vector<int8_t>>({"Haidc_heavyTag", "Heavy particle tag"});
-    Haidc_electronTag_ = model->MakeField<std::vector<int8_t>>({"Haidc_electronTag", "Electron tag"});
-    Haidc_selectionFlag_ = model->MakeField<std::vector<int8_t>>({"Haidc_selectionFlag", "Selection flag"});
+    MakeField(model, "Haidc_pionTag", "Pion tag", Haidc_pionTag_);
+    MakeField(model, "Haidc_kaonTag", "Kaon tag", Haidc_kaonTag_);
+    MakeField(model, "Haidc_protonTag", "Proton tag", Haidc_protonTag_);
+    MakeField(model, "Haidc_heavyTag", "Heavy particle tag", Haidc_heavyTag_);
+    MakeField(model, "Haidc_electronTag", "Electron tag", Haidc_electronTag_);
+    MakeField(model, "Haidc_selectionFlag", "Selection flag", Haidc_selectionFlag_);
 
-    Dedx_value_ = model->MakeField<std::vector<float>>({"Dedx_value", "Dedx value (1 fopr mips)"});
-    Dedx_width_ = model->MakeField<std::vector<float>>({"Dedx_width", "Dedx Landau width"});
-    Dedx_nrWires_ = model->MakeField<std::vector<int16_t>>({"Dedx_nrWires", "Dedx number of wires"});
-    Dedx_gapWires_ = model->MakeField<std::vector<float>>({"Dedx_gapWires", "Mean distance between wires"});
-    Dedx_error_ = model->MakeField<std::vector<float>>({"Dedx_error", "Dedx value error"});
-    Dedx_valueVD_ = model->MakeField<std::vector<float>>({"Dedx_valueVD", "Dedx VD value"});
-    Dedx_nrVDHits_ = model->MakeField<std::vector<int16_t>>({"Dedx_nrVDHits", "Number of VD hits"});
+    MakeField(model, "Dedx_value", "Dedx value (1 for mips)", Dedx_value_);
+    MakeField(model, "Dedx_width", "Dedx Landau width", Dedx_width_);
+    MakeField(model, "Dedx_nrWires", "Dedx number of wires", Dedx_nrWires_);
+    MakeField(model, "Dedx_gapWires", "Mean distance between wires", Dedx_gapWires_);
+    MakeField(model, "Dedx_error", "Dedx value error", Dedx_error_);
+    MakeField(model, "Dedx_valueVD", "Dedx VD value", Dedx_valueVD_);
+    MakeField(model, "Dedx_nrVDHits", "Number of VD hits", Dedx_nrVDHits_);
 
-    Rich_theg_ = model->MakeField<std::vector<float>>({"Rich_theg", "Cherenkov angle gas radiator"});
-    Rich_sigg_ = model->MakeField<std::vector<float>>({"Rich_sigg", "Sigma of Cherenvov angle gas radiator"});
-    Rich_nphg_ = model->MakeField<std::vector<int16_t>>({"Rich_nphg", "Observerd number of photons gas radiator"});
-    Rich_nepg_ = model->MakeField<std::vector<float>>({"Rich_nepg", "Expected number of photons gas radiator"});
-    Rich_flagg_ = model->MakeField<std::vector<int16_t>>({"Rich_flagg", "Flag gas radiator"});
-    Rich_thel_ = model->MakeField<std::vector<float>>({"Rich_thel", "Cherenkov angle liquid radiator"});
-    Rich_sigl_ = model->MakeField<std::vector<float>>({"Rich_sigl", "Sigma of Cherenkov angle liquid radiator"});
-    Rich_nphl_ = model->MakeField<std::vector<int16_t>>({"Rich_nphl", "Observerd number of photons liquid radiator"});
-    Rich_nepl_ = model->MakeField<std::vector<float>>({"Rich_nepl", "Expected number of photons liquid radiator"});
-    Rich_flagl_ = model->MakeField<std::vector<int16_t>>({"Rich_flagl", "Flag liquid radiator"});
-
+    MakeField(model, "Rich_theg", "Cherenkov angle gas radiator", Rich_theg_);
+    MakeField(model, "Rich_sigg", "Sigma of Cherenkov angle gas radiator", Rich_sigg_);
+    MakeField(model, "Rich_nphg", "Observed number of photons gas radiator", Rich_nphg_);
+    MakeField(model, "Rich_nepg", "Expected number of photons gas radiator", Rich_nepg_);
+    MakeField(model, "Rich_flagg", "Flag gas radiator", Rich_flagg_);
+    MakeField(model, "Rich_thel", "Cherenkov angle liquid radiator", Rich_thel_);
+    MakeField(model, "Rich_sigl", "Sigma of Cherenkov angle liquid radiator", Rich_sigl_);
+    MakeField(model, "Rich_nphl", "Observed number of photons liquid radiator", Rich_nphl_);
+    MakeField(model, "Rich_nepl", "Expected number of photons liquid radiator", Rich_nepl_);
+    MakeField(model, "Rich_flagl", "Flag liquid radiator", Rich_flagl_);
 }
 
 void NanoAODWriter::fillHadid()
@@ -774,18 +794,6 @@ void NanoAODWriter::fillHadid()
         }
     }
 }
-
-void NanoAODWriter::fillBtag()
-{
-    fillVector<float>(Btag_probNegIP_, 1, 3, [](int i)
-                      { return sk::QBTPRN(i); });
-    fillVector<float>(Btag_probPosIP_, 1, 3, [](int i)
-                      { return sk::QBTPRP(i); });
-    fillVector<float>(Btag_probAllIP_, 1, 3, [](int i)
-                      { return sk::QBTPRS(i); });
-
-    *Btag_thrustVector_ = XYZVectorF(sk::QBTTHR(1), sk::QBTTHR(2), sk::QBTTHR(3));
-}   
 
 void NanoAODWriter::user99()
 {

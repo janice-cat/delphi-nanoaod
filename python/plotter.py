@@ -136,36 +136,49 @@ def main(
         for df_config in config:
             for name, expression in df_config.get("Define", {}).items():
                 log.debug("Defining %s: %s", name, expression)
-                df = df.Define(name, expression)
-            for histo1D in df_config["Histo1D"]:
-                name = histo1D["name"]
+                try:
+                    # Check if the expression is a valid C++ expression
+                    df = df.Define(name, expression)
+                except (
+                    TypeError,
+                    RuntimeError,
+                ):  # Handle the case where the expression is not valid
+                    log.error("Error defining %s: %s", name, expression)
+                    continue
+            for name, histo1D in df_config["Histo1D"].items():
                 title = histo1D.get("title", name)
                 nbins, min_bin, max_bin = histo1D["bins"]
                 varname = histo1D.get("varname", name)
                 histo_name = f"{df_name}_{name}"
                 log.debug("Creating histogram %s: %s", histo_name, varname)
-                histos[histo_name] = df.Histo1D(
-                    (
-                        histo_name,
-                        title,
-                        nbins,
-                        min_bin,
-                        max_bin,
-                    ),
-                    varname,
-                    "weight",
-                )
+                try:
+                    histos[histo_name] = df.Histo1D(
+                        (
+                            histo_name,
+                            title,
+                            nbins,
+                            min_bin,
+                            max_bin,
+                        ),
+                        varname,
+                        "weight",
+                    )
+                except (
+                    TypeError
+                ):  # Handle the case where the histogram cannot be created
+                    log.error("Error creating histogram %s: %s", histo_name, varname)
+                    continue
     log.info("Filling histograms")
     ROOT.RDF.RunGraphs(list(histos.values()))
 
-    log.info("Writing histograms to %s", output_path)
     with ROOT.TFile(str(output_path), "RECREATE") as _output_file:
         for histo in histos.values():
             histo.Write()
+    log.info("Histograms written to %s", output_path)
 
+    pdf_output_path = output_path.with_suffix(".pdf")
     # Plot histograms with ratio plot
-    for histo1D in df_config["Histo1D"]:
-        name = histo1D["name"]
+    for i, (name, histo1D) in enumerate(df_config["Histo1D"].items()):
         title = histo1D.get("title", name)
 
         # Create canvas with three pads: one for the histogram, one for the ratio, and one for the logarithmic plot
@@ -241,9 +254,14 @@ def main(
         relative_ratio.Draw("E1")  # E1 for error bars
 
         # Save the canvas
-        pdf_output_path = output_path.parent / f"{output_path.stem}_{name}.pdf"
-        canvas.SaveAs(str(pdf_output_path))
-        log.info("Saved histogram %s to %s", name, pdf_output_path)
+        if i == 0:
+            # Save the first canvas as a single page PDF
+            canvas.Print(f"{pdf_output_path}(", "pdf")
+        elif i == len(df_config["Histo1D"]) - 1:
+            canvas.Print(f"{pdf_output_path})", "pdf")
+        else:
+            canvas.Print(str(pdf_output_path), "pdf")
+    log.info("Plots written to %s", pdf_output_path)
 
 
 if __name__ == "__main__":
