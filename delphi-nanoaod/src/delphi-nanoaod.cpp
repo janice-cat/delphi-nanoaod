@@ -120,7 +120,7 @@ int main(int argc, char *argv[])
   try
   {
     YAML::Node configNode = YAML::LoadFile(config);
-    if ( configNode["select_hadrons"])
+    if ( configNode["select_hadrons"].as<bool>(false))
     {
       nanoAODWriter->selectHadrons();
     }
