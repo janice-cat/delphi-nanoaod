@@ -22,6 +22,4 @@ auto getPhi = [](const auto& x) { return x.Phi(); };
 auto getE = [](const auto& x) { return x.E(); };
 auto getM = [](const auto& x) { return x.M(); };
 
-
-
 #endif // PLOTTER_HPP

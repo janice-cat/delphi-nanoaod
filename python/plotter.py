@@ -15,10 +15,6 @@ from ruamel.yaml import YAML
 log = logging.getLogger(__name__)
 click_log.basic_config(log)
 
-
-# lazy loading of ROOT
-# import ROOT
-
 SCRIPT_DIR = pathlib.Path(__file__).parent.resolve()
 
 
@@ -34,6 +30,7 @@ SCRIPT_DIR = pathlib.Path(__file__).parent.resolve()
     metavar="PATH",
     type=click.Path(exists=True, dir_okay=False, path_type=pathlib.Path),
     required=True,
+    multiple=True,
     help="Path to the data file.",
 )
 @click.option(
@@ -75,7 +72,7 @@ SCRIPT_DIR = pathlib.Path(__file__).parent.resolve()
 )
 @click_log.simple_verbosity_option(log, "-l", "--logging", default="INFO")
 def main(
-    data_path: pathlib.Path,
+    data_path: list[pathlib.Path],
     mc_path: list[pathlib.Path],
     output_path: pathlib.Path,
     config_path: pathlib.Path,
@@ -99,7 +96,9 @@ def main(
     ROOT.gStyle.SetOptStat(0)
 
     dataframes = {
-        "data": ROOT.RDF.Experimental.FromRNTuple("Events", str(data_path)),
+        "data": ROOT.RDF.Experimental.FromRNTuple(
+            "Events", [str(p) for p in data_path]
+        ),
         "mc": ROOT.RDF.Experimental.FromRNTuple("Events", [str(p) for p in mc_path]),
     }
 
@@ -141,7 +140,6 @@ def main(
                     df = df.Define(name, expression)
                 except (
                     TypeError,
-                    RuntimeError,
                 ):  # Handle the case where the expression is not valid
                     log.error("Error defining %s: %s", name, expression)
                     continue
@@ -187,7 +185,7 @@ def main(
 
         # Upper pad for histograms
         upper_pad = canvas.cd(1)
-        upper_pad.SetPad(0, 0.3, 1, 1)  # Top 70% of the canvas
+        upper_pad.SetPad(0, 0.2, 1, 1)  # Top 80% of the canvas
         upper_pad.SetBottomMargin(0.15)  # Reduce bottom margin
         upper_pad.SetGrid()
 
@@ -226,7 +224,7 @@ def main(
         # Lower pad for ratio plot
         lower_pad = canvas.cd(2)
         lower_pad.SetPad(
-            0.0, 0.0, 1, 0.3
+            0.0, 0.0, 1, 0.2
         )  # Adjusted to increase the distance from the lower pad
         lower_pad.SetTopMargin(0.02)  # Reduce top margin
         lower_pad.SetBottomMargin(0.15)  # Increase bottom margin for axis labels

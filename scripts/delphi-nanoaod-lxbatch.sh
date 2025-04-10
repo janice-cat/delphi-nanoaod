@@ -30,4 +30,4 @@ else
     "$BINARY_FILE" -N "$NICKNAME" -C "$CONFIG_FILE" -O "$OUTPUT" "$@"
 fi
 
-xrdcp --force --retry 3 "$OUTPUT" "root://eosproject.cern.ch//eos/project/d/delphi/public/nanoaod/$OUTPUT"
+xrdcp --force --retry 3 "$OUTPUT" "root://eosproject.cern.ch//eos/project/d/delphi/public/nanoaod/v0.1.0/$OUTPUT"
