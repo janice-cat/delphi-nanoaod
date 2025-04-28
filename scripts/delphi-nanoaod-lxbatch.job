@@ -5,62 +5,73 @@ submit_dir = $Fpf(SUBMIT_FILE)
 
 executable            = $(submit_dir)/delphi-nanoaod-lxbatch.sh
 batch_name            = delphi-nanoaod
-arguments             = $(nickname) $(config) $(extra)
-output                = $(afs_work)/delphi-nanoaod.$(ClusterId).$(nickname).out
-error                 = $(afs_work)/delphi-nanoaod.$(ClusterId).$(nickname).err
+arguments             = $(nickname) $(k7s) $(split) $(config) $(extra)
+output                = $(afs_work)/delphi-nanoaod.$(ClusterId).$(nickname)-$(split).out
+error                 = $(afs_work)/delphi-nanoaod.$(ClusterId).$(nickname)-$(split).err
 log                   = $(afs_work)/delphi-nanoaod.$(ClusterId).log
 environment           = SUBMIT_DIR=$(submit_dir)
 
 transfer_output_files   = ""
 
+# restart failed jobs ...
+
+on_exit_remove   = (ExitBySignal == False) && (ExitCode == 0)
+max_retries      = 3
+requirements     = Machine =!= LastRemoteHost
+
 #+JobFlavor = "espresso"
-+JobFlavour = "longlunch"
-#+JobFlavour = "workday"
+#+JobFlavour = "longlunch"
++JobFlavour = "workday"
 
-#queue nickname, config, extra from (
-#   short94_c2, default, --max-events 1000
-#   sh_qqps_b94_2l_c2, default, --mc --max-events 1000
-#)
-
-queue nickname, config, extra from (
-  short91_f1, default, --data
-  short92_e2, default, --data
-  short93_d2, default, --data
-  short94_c2, default, --data
-  short95_d2, default, --data
-  xshort96z_g2, default, --data
-  xsdst96_f2, deafault, --data
-  xshort97z_g2, default, --data
-  xsdst97_g2, default, --data
-  xshort98z_e2, default, --data
-  xsdst98_e2, default, --data
-  xshort99z_e2, default, --data
-  xsdst99_e2, default, --data
-  xshort00z_e1, default, --data
-  xsdst00_u2, default, --data
-  sh_qqps_b91_2_f1, default, --mc
-  sh_qqps_b91_2_f1, default, --mc
-  sh_qqps_k91_2_f1, default, --mc
-  sh_qqps_m91_2_f1, default, --mc
-  sh_qqps_r91_2_f1, default, --mc
-  sh_qqps_sa91_2_f1, default, --mc
-  sh_qqps_k92_2g_e2, default, --mc
-  sh_qqps_k92_2l_e2, default, --mc
-  sh_qqps_r92_2g_e2, default, --mc
-  sh_qqps_r92_2l_e2, default, --mc
-  sh_qqps_sa92_2l_e2, default, --mc
-  sh_qqps_k93_2g_d2, default, --mc
-  sh_qqps_k93_2l_d2, default, --mc
-  sh_qqps_b94_2l_c2, default, --mc 
-  sh_qqps_k94_2l_c2, default, --mc
-  sh_qqps_r94_2l_c2, default, --mc
-  sh_qqps_s94_2l_c2, default, --mc
-  sh_qqps_sa94_2l_c2, default, --mc
-  sh_qqps_b95_1l_d2, default, --mc
-  sh_qqps_r95_1l_d2, default, --mc
-  sh_qqps_sa95_1l_d2, default, --mc
-  xs_qqps_e91.25_r96_1l_g1, default, --mc
-  xs_qqps_e91.25_c97_1l_g1, default, --mc
-  xs_qqps_e91.25_c98_1l_e1, default, --mc
-  xs_qqps_e91.25_c99_1l_e1, default, --mc 
+queue nickname, k7s, split, config, extra from (
+   short91_f1, ., 0, default, --data
+   short92_e2, ., 0, default, --data
+   short93_d2, ., 0, default, --data
+   short94_c2, C1-143, 1, default, --data
+   short94_c2, C144-286, 2, default, --data
+   short94_c2, C287-429, 3, default, --data
+   short95_d2, C1-123, 1, default, --data
+   short95_d2, C124-246, 2, default, --data
+   xshort96z_g2, ., 0, default, --data
+   xsdst96_f2, ., 0, default, --data
+   xshort97z_g2, ., 0, default, --data
+   xsdst97_e183_g2, ., 0, default, --data
+   xshort98z_e2, ., 0, default, --data
+   xsdst98_e2, ., 0, default, --data
+   xshort99z_e2, ., 0, default, --data
+   xsdst99_e2, ., 0, default, --data
+   xshort00z_e1, ., 0, default, --data
+   xsdst00_u2, ., 0, default, --data
+   sh_qqps_b91_2_f1, ., 0, default, --mc
+   sh_qqps_b91_2_f1, ., 0, default, --mc
+   sh_qqps_k91_2_f1, ., 0, default, --mc
+   sh_qqps_m91_2_f1, ., 0, default, --mc
+   sh_qqps_r91_2_f1, ., 0, default, --mc
+   sh_qqps_sa91_2_f1, ., 0, default, --mc
+   sh_qqps_k92_2g_e2, ., 0, default, --mc
+   sh_qqps_k92_2l_e2, ., 0, default, --mc
+   sh_qqps_r92_2g_e2, ., 0, default, --mc
+   sh_qqps_r92_2l_e2, ., 0, default, --mc
+   sh_qqps_sa92_2l_e2, ., 0, default, --mc
+   sh_qqps_k93_2g_d2, C1-150, 1, default, --mc
+   sh_qqps_k93_2g_d2, C151-300, 2, default, --mc
+   sh_qqps_k93_2g_d2, C300-452, 3, default, --mc
+   sh_qqps_k93_2l_d2, ., 0, default, --mc
+   sh_qqps_b94_2l_c2, ., 0, default, --mc
+   sh_qqps_k94_2l_c2, C1-183, 1, default, --mc
+   sh_qqps_k94_2l_c2, C183-366, 2, default, --mc
+   sh_qqps_k94_2l_c2, C367-549, 3, default, --mc
+   sh_qqps_k94_2l_c2, C550-732, 4, default, --mc
+   sh_qqps_k94_2l_c2, C733-919, 5, default, --mc
+   sh_qqps_r94_2l_c2, ., 0, default, --mc
+   sh_qqps_s94_2l_c2, ., 0, default, --mc
+   sh_qqps_sa94_2l_c2, ., 0, default, --mc
+   sh_qqps_b95_1l_d2, ., 0, default, --mc
+   sh_qqps_r95_1l_d2, ., 0, default, --mc
+   sh_qqps_sa95_1l_d2, ., 0, default, --mc
+   xs_qqps_e91.25_r96_1l_g1, ., 0, default, --mc
+   xs_qqps_e91.25_c97_1l_g1, ., 0, default, --mc
+   xs_qqps_e91.25_c98_1l_e1, ., 0, default, --mc
+   xs_qqps_e91.25_c99_1l_e1, C1-136, 1, default, --mc
+   xs_qqps_e91.25_c99_1l_e1, C137-272, 2, default, --mc
 )

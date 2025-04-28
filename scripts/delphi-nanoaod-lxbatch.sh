@@ -1,15 +1,21 @@
-#!/bin/bash -x
+#!/bin/bash -xe
 
 # parse arguments
-NICKNAME="$1"
-if [ "$2" = "default" ]; then
+if [ "$4" = "default" ]; then
     CONFIG="delphi-nanoaod"
-    OUTPUT="$NICKNAME.root"
+    OUTPUT="$1"
 else
-    CONFIG="delphi-nanoaod-$2"
-    OUTPUT="$NICKNAME-$2.root"
+    CONFIG="delphi-nanoaod-$4"
+    OUTPUT="$1-$4"
 fi
-shift 2
+if [ "$2" = "." ]; then
+    OUTPUT="$OUTPUT.root"
+    NICKNAME="$1"
+else
+    OUTPUT="$OUTPUT-$3.root"
+    NICKNAME="$1/$2"
+fi
+OPTIONS="$5"
 
 # Set up the environment
 set +x
@@ -24,10 +30,9 @@ set -x
 CONFIG_FILE="$(realpath "$SUBMIT_DIR/../config/$CONFIG.yaml")"
 BINARY_FILE="$(realpath "$SUBMIT_DIR/../build/delphi-nanoaod/delphi-nanoaod")"
 
-if [ "$1" = "." ]; then
-    "$BINARY_FILE" -N "$NICKNAME" -C "$CONFIG_FILE" -O "$OUTPUT"
-else
-    "$BINARY_FILE" -N "$NICKNAME" -C "$CONFIG_FILE" -O "$OUTPUT" "$@"
-fi
 
-xrdcp --force --retry 3 "$OUTPUT" "root://eosproject.cern.ch//eos/project/d/delphi/public/nanoaod/v0.1.0/$OUTPUT"
+"$BINARY_FILE" -N "$NICKNAME" -C "$CONFIG_FILE" -O "$OUTPUT" "$OPTIONS"
+
+ls -l
+
+xrdcp --force --retry 3 --cksum adler32 "$OUTPUT" "root://eosproject.cern.ch//eos/project/d/delphi/public/nanoaod/v0.2.0/$OUTPUT"

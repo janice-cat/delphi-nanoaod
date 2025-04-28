@@ -13,6 +13,7 @@
 #include <Math/Vector4D.h>
 #include <Math/Vector3D.h>
 #include <Math/SMatrixFfwd.h>
+#include <Math/SVector.h>
 
 using RNTupleWriter = ROOT::Experimental::RNTupleWriter;
 using RNTupleModel = ROOT::Experimental::RNTupleModel;
@@ -22,6 +23,10 @@ namespace sk = skelana;
 typedef ROOT::Math::XYZTVectorF XYZTVectorF;
 typedef ROOT::Math::DisplacementVector3D< ROOT::Math::Cartesian3D<float>, ROOT::Math::DefaultCoordinateSystemTag > XYZVectorF;
 typedef ROOT::Math::PositionVector3D< ROOT::Math::Cartesian3D<float>, ROOT::Math::DefaultCoordinateSystemTag > XYZPointF;
+
+typedef ROOT::Math::SMatrixSym3F SMatrixSym3F;
+typedef ROOT::Math::SMatrixSym5F SMatrixSym5F;
+typedef ROOT::Math::SVector<float, 5> SVector5F;
 
 
 class NanoAODWriter : public sk::Analysis
@@ -84,28 +89,31 @@ private:
     std::shared_ptr<float> Event_magField_;
     std::shared_ptr<float> Event_cmEnergy_;
     std::shared_ptr<int8_t> Event_shortDstVersion_;
-    std::shared_ptr<bool> Event_hadronT4_;
-    std::shared_ptr<int16_t> Event_nChaMultT4_;
-    std::shared_ptr<int16_t> Event_nChaMult_;
-    std::shared_ptr<int16_t> Event_nNeuMult_;
-    std::shared_ptr<float> Event_totalChaEnergy_;
+    std::shared_ptr<bool> Event_hadronTagT4_;
+    std::shared_ptr<int16_t> Event_chargedMultT4_;
+    std::shared_ptr<int16_t> Event_chargedMult_;
+    std::shared_ptr<int16_t> Event_neutralMult_;
+    std::shared_ptr<float> Event_totalChargedEnergy_;
     std::shared_ptr<float> Event_totalEMEnergy_;
-    std::shared_ptr<float> Event_totalHadEnergy_;
+    std::shared_ptr<float> Event_totalHadronicEnergy_;
     std::shared_ptr<std::string> Event_DSTType_;
 
     std::shared_ptr<int16_t> nPart_;
-    std::shared_ptr<std::vector<XYZTVectorF>> Part_vector_;
+    std::shared_ptr<std::vector<XYZTVectorF>> Part_fourMomentum_;
     std::shared_ptr<std::vector<int8_t>> Part_charge_;
     std::shared_ptr<std::vector<int16_t>> Part_pdgId_;
-    std::shared_ptr<std::vector<int>> Part_massid_;
-    std::shared_ptr<std::vector<int16_t>> Part_jetnr_;
+    std::shared_ptr<std::vector<int>> Part_massId_;
+    std::shared_ptr<std::vector<int8_t>> Part_jetIdx_;
+    std::shared_ptr<std::vector<int8_t>> Part_hemisphereIdx_;
+    std::shared_ptr<std::vector<int8_t>> Part_vtxCode_;
+    std::shared_ptr<std::vector<int8_t>> Part_vtxIdx_;
     std::shared_ptr<std::vector<int>> Part_lock_;
     std::shared_ptr<std::vector<int16_t>> Part_simIdx_;
     std::shared_ptr<std::vector<int16_t>> Part_originVtxIdx_;
     std::shared_ptr<std::vector<int16_t>> Part_decayVtxIdx_;
 
     std::shared_ptr<int16_t> nJet_;
-    std::shared_ptr<std::vector<XYZTVectorF>> Jet_vector_;
+    std::shared_ptr<std::vector<XYZTVectorF>> Jet_fourMomentum_;
     std::shared_ptr<std::vector<int8_t>> Jet_charge_;
 
     std::shared_ptr<float> Jet_thrust_;
@@ -116,7 +124,7 @@ private:
     std::shared_ptr<std::vector<XYZVectorF>> Jet_sphericityVector_;
 
     std::shared_ptr<int16_t> nSimPart_;
-    std::shared_ptr<std::vector<XYZTVectorF>> SimPart_vector_;
+    std::shared_ptr<std::vector<XYZTVectorF>> SimPart_fourMomentum_;
     std::shared_ptr<std::vector<int16_t>> SimPart_charge_;
     std::shared_ptr<std::vector<int16_t>> SimPart_pdgId_;
     std::shared_ptr<std::vector<int16_t>> SimPart_partIdx_;
@@ -130,70 +138,60 @@ private:
     std::shared_ptr<std::vector<int16_t>> GenPart_parentIdx_;
     std::shared_ptr<std::vector<int16_t>> GenPart_firstChildIdx_;
     std::shared_ptr<std::vector<int16_t>> GenPart_lastChildIdx_;
-    std::shared_ptr<std::vector<XYZTVectorF>> GenPart_vector_;
-    std::shared_ptr<std::vector<XYZTVectorF>> GenPart_vertex_;
+    std::shared_ptr<std::vector<XYZTVectorF>> GenPart_fourMomentum_;
+    std::shared_ptr<std::vector<XYZTVectorF>> GenPart_fourPosition_;
     std::shared_ptr<std::vector<float>> GenPart_tau_;
     std::shared_ptr<std::vector<int16_t>> GenPart_simIdx_;
 
     std::shared_ptr<int16_t> nVtx_;
-    std::shared_ptr<std::vector<int16_t>> Vtx_firstOutIdx_;
-    std::shared_ptr<std::vector<int16_t>> Vtx_firstInIdx_;
-    std::shared_ptr<std::vector<int16_t>> Vtx_nOut_;
+    std::shared_ptr<std::vector<int16_t>> Vtx_outgoingIdx_;
+    std::shared_ptr<std::vector<int16_t>> Vtx_incomingIdx_;
+    std::shared_ptr<std::vector<int16_t>> Vtx_nOutgoing_;
     std::shared_ptr<std::vector<int16_t>> Vtx_ndf_;
-    std::shared_ptr<std::vector<int16_t>> Vtx_mcode_;
     std::shared_ptr<std::vector<XYZPointF>> Vtx_position_;
     std::shared_ptr<std::vector<float>> Vtx_chi2_;
-    std::shared_ptr<std::vector<ROOT::Math::SMatrixSym3F>> Vtx_errorMatrix_;
+    std::shared_ptr<std::vector<SMatrixSym3F>> Vtx_errorMatrix_;
     std::shared_ptr<std::vector<int16_t>> Vtx_errorFlag_;
     std::shared_ptr<std::vector<int16_t>> Vtx_status_;
 
     std::shared_ptr<int16_t> nSimVtx_;
-    std::shared_ptr<std::vector<int16_t>> SimVtx_firstOutIdx_;
-    std::shared_ptr<std::vector<int16_t>> SimVtx_firstInIdx_;
-    std::shared_ptr<std::vector<int16_t>> SimVtx_nOut_;
-    std::shared_ptr<std::vector<int16_t>> SimVtx_mcode_;
-    std::shared_ptr<std::vector<XYZPointF>> SimVtx_vertex_;
-    std::shared_ptr<std::vector<int16_t>> SimVtx_errorFlag_;
-    std::shared_ptr<std::vector<int16_t>> SimVtx_status_;
+    std::shared_ptr<std::vector<int16_t>> SimVtx_outgoingIdx_;
+    std::shared_ptr<std::vector<int16_t>> SimVtx_incomingIdx_;
+    std::shared_ptr<std::vector<int16_t>> SimVtx_nOutgoing_;
+    std::shared_ptr<std::vector<int16_t>> SimVtx_masscode_;
+    std::shared_ptr<std::vector<XYZPointF>> SimVtx_position_;
 
     std::shared_ptr<XYZVectorF> Beam_position_;
     std::shared_ptr<XYZVectorF> Beam_size_;
 
-    std::shared_ptr<std::vector<int16_t>> Part_tracIdx_;
+    std::shared_ptr<std::vector<int16_t>> Trac_partIdx_;
     std::shared_ptr<std::vector<int16_t>> Trac_originVtxIdx_;
     std::shared_ptr<std::vector<int16_t>> Trac_decayVtxIdx_;
-    std::shared_ptr<std::vector<float>> Trac_impactParRPhi_;
-    std::shared_ptr<std::vector<float>> Trac_impactParZ_;
-    std::shared_ptr<std::vector<float>> Trac_thetaPerigee_;
-    std::shared_ptr<std::vector<float>> Trac_phiPerigee_;
-    std::shared_ptr<std::vector<float>> Trac_curvaturePerigee_;
+    std::shared_ptr<std::vector<SVector5F>> Trac_perigee_;
     std::shared_ptr<std::vector<ROOT::Math::SMatrixSym5F>> Trac_weightMatrix_;
     std::shared_ptr<std::vector<float>> Trac_length_;
     std::shared_ptr<std::vector<int16_t>> Trac_detectors_;
-    std::shared_ptr<std::vector<float>> Trac_rFirstPoint_;
-    std::shared_ptr<std::vector<float>> Trac_zFirstPoint_;
+    std::shared_ptr<std::vector<float>> Trac_firstPointR_;
+    std::shared_ptr<std::vector<float>> Trac_firstPointZ_;
     std::shared_ptr<std::vector<float>> Trac_chi2NoVD_;
     std::shared_ptr<std::vector<float>> Trac_chi2VD_;
     std::shared_ptr<std::vector<int16_t>> Trac_ndfNoVD_;
     std::shared_ptr<std::vector<int16_t>> Trac_ndfVD_;
-    std::shared_ptr<std::vector<int16_t>> Trac_nHitVDRPhi_;
-    std::shared_ptr<std::vector<int16_t>> Trac_nHitVDZ_;
+    std::shared_ptr<std::vector<int16_t>> Trac_vdHitsRPhi_;
+    std::shared_ptr<std::vector<int16_t>> Trac_vdHitsZ_;
     std::shared_ptr<std::vector<float>> Trac_resRPhiFirstPoint_;
     std::shared_ptr<std::vector<float>> Trac_errorResRPhiFirstPoint_;
     std::shared_ptr<std::vector<float>> Trac_resZFirstPoint_;
     std::shared_ptr<std::vector<float>> Trac_errorResZFirstPoint_;
-    std::shared_ptr<std::vector<float>> Trac_impactParameterVertexGeomSign_;
-    std::shared_ptr<std::vector<float>> Trac_impactParameterZGeomSign_;
-    std::shared_ptr<std::vector<float>> Trac_impactParameterBeamSpotGeomSign_;
-    // std::shared_ptr<std::vector<float>> Trac_energyError_;
+    std::shared_ptr<std::vector<float>> Trac_impParToVertexRPhi_;
+    std::shared_ptr<std::vector<float>> Trac_impParToVertexZ_;
+    std::shared_ptr<std::vector<float>> Trac_impParToBeamSpotRPhi_;
     std::shared_ptr<std::vector<float>> Trac_chi2VDHits_;
 
-    std::shared_ptr<std::vector<int16_t>> Part_muidIdx_;
     std::shared_ptr<std::vector<int>> Muid_tag_;
     std::shared_ptr<std::vector<float>> Muid_looseChi2_;
     std::shared_ptr<std::vector<int16_t>> Muid_hitPattern_;
 
-    std::shared_ptr<std::vector<int16_t>> Part_elidIdx_;
     std::shared_ptr<std::vector<int>> Elid_tag_;
     std::shared_ptr<std::vector<int16_t>> Elid_gammaConversion_;
     std::shared_ptr<std::vector<float>> Elid_px_;
