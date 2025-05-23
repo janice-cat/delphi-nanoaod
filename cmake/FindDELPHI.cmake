@@ -39,9 +39,10 @@ function(target_link_cernlibs TARGET)
 
     execute_process(
         COMMAND cernlib ${ARGN}
-        OUTPUT_VARIABLE CERNLIBS
+        OUTPUT_VARIABLE CERNLIBS_RAW
         OUTPUT_STRIP_TRAILING_WHITESPACE
         )
+    string(REPLACE "-lnsl" "" CERNLIBS "${CERNLIBS_RAW}")
     target_link_libraries(${TARGET} ${CERNLIBS})
 
 endfunction()
