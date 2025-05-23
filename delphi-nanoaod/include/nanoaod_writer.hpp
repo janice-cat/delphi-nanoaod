@@ -188,10 +188,12 @@ private:
     std::shared_ptr<std::vector<float>> Trac_impParToBeamSpotRPhi_;
     std::shared_ptr<std::vector<float>> Trac_chi2VDHits_;
 
+    std::shared_ptr<std::vector<int>> Muid_partIdx_;
     std::shared_ptr<std::vector<int>> Muid_tag_;
     std::shared_ptr<std::vector<float>> Muid_looseChi2_;
     std::shared_ptr<std::vector<int16_t>> Muid_hitPattern_;
 
+    std::shared_ptr<std::vector<int>> Elid_partIdx_;
     std::shared_ptr<std::vector<int>> Elid_tag_;
     std::shared_ptr<std::vector<int16_t>> Elid_gammaConversion_;
     std::shared_ptr<std::vector<float>> Elid_px_;

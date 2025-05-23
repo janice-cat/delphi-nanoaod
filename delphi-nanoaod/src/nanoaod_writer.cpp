@@ -221,7 +221,7 @@ void NanoAODWriter::fillPart()
     fillVector(Part_pdgId_, sk::LVPART, sk::NVECP, [](int i)
                { return int(sk::VECP(8, i)); });
     fillVector(Part_massId_, sk::LVPART, sk::NVECP, [](int i)
-               { return sk::VECP(9, i); });
+               { return sk::IVECP(9, i); });
     fillVector(Part_jetIdx_, sk::LVPART, sk::NVECP, [](int i)
                { return (sk::IVECP(10, i) / 1000) % 10 - 1; });
     fillVector(Part_hemisphereIdx_, sk::LVPART, sk::NVECP, [](int i)
@@ -340,17 +340,74 @@ void NanoAODWriter::defineSimPart(std::unique_ptr<RNTupleModel> &model)
 
 void NanoAODWriter::fillSimPart()
 {
-    *nSimPart_ = sk::NVECMC;
-    fillVector(SimPart_fourMomentum_, sk::MTRACK + sk::LVPART, sk::NVECMC, [](int i)
-               { return XYZTVectorF(sk::VECP(1, i), sk::VECP(2, i), sk::VECP(3, i), sk::VECP(4, i)); });
-    fillVector(SimPart_charge_, sk::MTRACK + sk::LVPART, sk::NVECMC, [](int i)
-               { return int(sk::VECP(7, i)); });
-    fillVector(SimPart_pdgId_, sk::MTRACK + sk::LVPART, sk::NVECMC, [](int i)
-               { return int(sk::VECP(6, i)); });
-    fillVector(SimPart_partIdx_, sk::MTRACK + sk::LVPART, sk::NVECMC, [](int i)
+  // std::cout << "sim part" << std::endl;
+  // std::cout << "NPA: " << sk::NPA << ", NST: " << sk::NST <<  std::endl;
+  // std::cout << "nvecmc: " << sk::NVECMC << std::endl;
+
+  // std::cout << "NLU: " << sk::NLU << ", NSH: " << sk::NSH <<  std::endl;
+
+  // std::cout << "ISTPA" << std::endl;
+  // for (int i = 1; i < sk::NST; ++i) {
+  //   std::cout << sk::ISTPA(i) - 1 << ", ";
+  // }
+  // std::cout << std::endl;
+  // std::cout << "IPAST" << std::endl;
+  // for (int i = 1; i < sk::NPA; ++i) {
+  //   std::cout << sk::IPAST(i) - 1 << ", ";
+  // }
+  // std::cout << std::endl;
+
+  // std::cout << "ISTLU" << std::endl;
+  // for (int i = 1; i < sk::NST; ++i) {
+  //   std::cout << sk::ISTLU(i) - 1 << ", ";
+  // }
+  // std::cout << std::endl;
+
+  // std::cout << "ILUST" << std::endl;
+  // for (int i = 1; i < sk::NLU; ++i) {
+  //   std::cout << sk::ILUST(i) - 1 << ", ";
+  // }
+  // std::cout << std::endl;
+
+  // std::cout << "ISTSH" << std::endl;
+  // for (int i = 1; i < sk::NST; ++i) {
+  //   std::cout << sk::ISTSH(i) - 1 << ", ";
+  // }
+  // std::cout << std::endl;
+
+  // std::cout << "ISHST" << std::endl;
+  // for (int i = 1; i < sk::NSH; ++i) {
+  //   std::cout << sk::ISHST(i) - 1 << ", ";
+  // }
+  // std::cout << std::endl;
+
+  // std::cout << "ILUSH" << std::endl;
+  // for (int i = 1; i < sk::NLU; ++i) {
+  //   std::cout << sk::ILUSH(i) - 1 << ", ";
+  // }
+  // std::cout << std::endl;
+
+  // std::cout << "ISHLU" << std::endl;
+  // for (int i = 1; i < sk::NSH; ++i) {
+  //   std::cout << sk::ISHLU(i) - 1 << ", ";
+  // }
+  // std::cout << std::endl;
+
+
+  // std::cout << "lvpart: " << sk::LVPART << std::endl;
+  // std::cout << "mtrack: " << sk::MTRACK << std::endl;
+
+  *nSimPart_ = sk::NVECMC;
+  fillVector(SimPart_fourMomentum_, sk::MTRACK + sk::LVPART, sk::NVECMC, [](int i)
+  { return XYZTVectorF(sk::VECP(1, i), sk::VECP(2, i), sk::VECP(3, i), sk::VECP(4, i)); });
+  fillVector(SimPart_charge_, sk::MTRACK + sk::LVPART, sk::NVECMC, [](int i)
+  { return int(sk::VECP(7, i)); });
+  fillVector(SimPart_pdgId_, sk::MTRACK + sk::LVPART, sk::NVECMC, [](int i)
+  { return int(sk::VECP(6, i)); });
+  fillVector(SimPart_partIdx_, sk::LVPART, sk::NVECMC, [](int i)
                { return sk::ISTPA(i) - 1; });
-    fillVector(SimPart_genIdx_, sk::MTRACK + sk::LVPART, sk::NVECMC, [](int i)
-               { return sk::ISTLU(i) - 1; });
+    fillVector(SimPart_genIdx_, sk::LVPART, sk::NVECMC, [](int i)
+               { return sk::ISTSH(i) - 1; });
     fillVector(SimPart_originVtxIdx_, sk::MTRACK + sk::LVPART, sk::NVECMC, [](int i)
                { return sk::ISTVX(1, i) - 1; });
     fillVector(SimPart_decayVtxIdx_, sk::MTRACK + sk::LVPART, sk::NVECMC, [](int i)
@@ -391,7 +448,7 @@ void NanoAODWriter::fillGenPart()
     fillVector(GenPart_tau_, 1, sk::NP, [](int i)
                { return sk::VP(i, 5); });
     fillVector(GenPart_simIdx_, 1, sk::NP, [](int i)
-               { return sk::ILUST(i) - 1; });
+               { return sk::ISHST(i) - 1; });
 }
 
 void NanoAODWriter::defineSimVtx(std::unique_ptr<RNTupleModel> &model)
@@ -505,6 +562,7 @@ void NanoAODWriter::fillTrac()
 
 void NanoAODWriter::defineMuid(std::unique_ptr<RNTupleModel> &model)
 {
+    MakeField(model, "Muid_partIdx", "Muon ID link to track ID", Muid_partIdx_);
     MakeField(model, "Muid_tag", "Muon ID tag", Muid_tag_);
     MakeField(model, "Muid_looseChi2", "Muon ID loose chi2", Muid_looseChi2_);
     MakeField(model, "Muid_hitPattern", "Muon ID hit pattern", Muid_hitPattern_);
@@ -512,13 +570,17 @@ void NanoAODWriter::defineMuid(std::unique_ptr<RNTupleModel> &model)
 
 void NanoAODWriter::fillMuid()
 {
+    Muid_partIdx_->clear();
     Muid_tag_->clear();
     Muid_looseChi2_->clear();
     Muid_hitPattern_->clear();
+
     for (int i = sk::LVPART; i <= sk::NVECP; i++)
-    {
-        if (sk::KMUID(3, i) != 0)
+      {
+
+        if (sk::KMUID(1, i) != 0)
         {
+            Muid_partIdx_->push_back(i - 1);
             Muid_tag_->push_back(sk::KMUID(1, i));
             Muid_looseChi2_->push_back(sk::QMUID(2, i));
             Muid_hitPattern_->push_back(sk::KMUID(3, i));
@@ -528,6 +590,7 @@ void NanoAODWriter::fillMuid()
 
 void NanoAODWriter::defineElid(std::unique_ptr<RNTupleModel> &model)
 {
+    MakeField(model, "Elid_partIdx", "Electron ID link to track ID", Elid_partIdx_);
     MakeField(model, "Elid_tag", "Electron ID tag", Elid_tag_);
     MakeField(model, "Elid_gammaConversion", "Electron ID gamma conversion", Elid_gammaConversion_);
     MakeField(model, "Elid_px", "Best electron px estimation", Elid_px_);
@@ -537,6 +600,7 @@ void NanoAODWriter::defineElid(std::unique_ptr<RNTupleModel> &model)
 
 void NanoAODWriter::fillElid()
 {
+    Elid_partIdx_->clear();
     Elid_tag_->clear();
     Elid_gammaConversion_->clear();
     Elid_px_->clear();
@@ -546,6 +610,8 @@ void NanoAODWriter::fillElid()
     {
         if (sk::KELID(1, i) != 0)
         {
+
+            Elid_partIdx_->push_back(i - 1);
             Elid_tag_->push_back(sk::KELID(1, i));
             Elid_gammaConversion_->push_back(sk::KELID(2, i));
             Elid_px_->push_back(sk::QELID(3, i));
