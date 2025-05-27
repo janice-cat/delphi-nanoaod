@@ -6,6 +6,11 @@
 #include <Math/Vector3D.h>
 #include <Math/SMatrix.h>
 
+#include <TTree.h>
+
+#include "TDatabasePDG.h"
+#include "TParticlePDG.h"
+
 // Additional common block to extract jet releateted variables
 extern "C" struct
 {
@@ -100,7 +105,36 @@ void NanoAODWriter::user00()
     {
         defineBtag(model);
     }
-    writer_ = RNTupleWriter::Recreate(std::move(model), "Events", output_.string());
+    // writer_ = RNTupleWriter::Recreate(std::move(model), "Events", output_.string());
+
+    file_ = TFile::Open(output_.string().c_str(), "recreate");
+    writer_ = RNTupleWriter::Append(std::move(model), "Events", *file_);
+    // file_ = TFile::CurrentFile();
+    // file_->cd();
+    out_t = new TTree("t", "t");
+    out_tgen = new TTree("tgen", "tgen");
+    out_t->SetDirectory(file_);
+    out_tgen->SetDirectory(file_);
+
+    out_t->Branch("EMF", emf);
+    out_t->Branch("HPC", hpc);
+    out_t->Branch("HAC", hac);
+    out_t->Branch("STIC", stic);
+    out_t->Branch("LOCK", lock);
+
+    // register branches
+    do_chThrust           = false;
+    do_neuThrust          = false;
+    do_thrustCorr         = false;
+    do_thrustCorrInverse  = false;
+    do_thrustMissP        = true;
+    out_pData.SetBranchWrite(out_t, 1);
+    out_eData.SetBranchWrite(out_t, 0);
+
+    out_pData_gen.SetBranchWrite(out_tgen, 1);
+    out_eData_gen.SetBranchWrite(out_tgen, 0);
+
+    pdgDatabase = TDatabasePDG::Instance();
 };
 
 int NanoAODWriter::user01()
@@ -146,7 +180,16 @@ void NanoAODWriter::user02()
         fillHadid();
     }
 
+    fillPartLoop(out_pData, out_eData, 0);
+    fillSelection(out_pData, out_eData);
+
     writer_->Fill();
+    out_t->Fill();
+    if (mc_) {
+        fillPartLoop(out_pData_gen, out_eData_gen, 1);
+        fillSelection(out_pData_gen, out_eData_gen);
+        out_tgen->Fill();
+    }
 };
 
 void NanoAODWriter::defineEvent(std::unique_ptr<RNTupleModel> &model)
@@ -187,6 +230,32 @@ void NanoAODWriter::fillEvent()
     *Event_totalEMEnergy_ = sk::EMNEU;
     *Event_totalHadronicEnergy_ = sk::EHNEU;
     *Event_DSTType_ = sk::CDTYPE();
+
+
+    out_pData.RunNo = *Event_runNumber_;
+    out_pData.EventNo = *Event_eventNumber_;
+	  out_pData_gen.RunNo = out_pData.RunNo;
+	  out_pData_gen.EventNo = out_pData.EventNo;
+
+	  out_pData.year = 1998; // temp //
+	  // out_pData.subDir = -999;
+	  // out_pData.process = -999;
+	  out_pData.source = 70; // temp //
+	  out_pData.isMC = mc_;
+	  out_pData.isOnres = false;
+    out_pData_gen.isMC = true;
+    out_pData_gen.isOnres = false;
+    out_pData.particleWeight = 1;
+    out_pData_gen.particleWeight = 1;
+	  // out_pData.uniqueID = 0;
+	  // out_pData.Energy = 0;
+	  // out_pData.bFlag = -999;
+	  // out_pData.bx = -999;
+	  // out_pData.by = -999;
+	  // out_pData.ebx = -999;
+	  // out_pData.eby = -999;
+    out_pData.Energy = *Event_cmEnergy_;
+    out_pData_gen.Energy = *Event_cmEnergy_;
 }
 
 void NanoAODWriter::definePart(std::unique_ptr<RNTupleModel> &model)
@@ -207,7 +276,6 @@ void NanoAODWriter::definePart(std::unique_ptr<RNTupleModel> &model)
         MakeField(model, "Part_simIdx", "Particle simulation index", Part_simIdx_);
         MakeField(model, "Part_originVtxIdx", "Particle origin vertex index", Part_originVtxIdx_);
         MakeField(model, "Part_decayVtxIdx", "Particle decay vertex index", Part_decayVtxIdx_);
-        ;
     }
 }
 
@@ -242,6 +310,7 @@ void NanoAODWriter::fillPart()
         fillVector(Part_decayVtxIdx_, sk::LVPART, sk::NVECP, [](int i)
                    { return sk::IPAPV(2, i) - 1; });
     }
+
 }
 
 void NanoAODWriter::defineJet(std::unique_ptr<RNTupleModel> &model)
@@ -340,63 +409,6 @@ void NanoAODWriter::defineSimPart(std::unique_ptr<RNTupleModel> &model)
 
 void NanoAODWriter::fillSimPart()
 {
-  // std::cout << "sim part" << std::endl;
-  // std::cout << "NPA: " << sk::NPA << ", NST: " << sk::NST <<  std::endl;
-  // std::cout << "nvecmc: " << sk::NVECMC << std::endl;
-
-  // std::cout << "NLU: " << sk::NLU << ", NSH: " << sk::NSH <<  std::endl;
-
-  // std::cout << "ISTPA" << std::endl;
-  // for (int i = 1; i < sk::NST; ++i) {
-  //   std::cout << sk::ISTPA(i) - 1 << ", ";
-  // }
-  // std::cout << std::endl;
-  // std::cout << "IPAST" << std::endl;
-  // for (int i = 1; i < sk::NPA; ++i) {
-  //   std::cout << sk::IPAST(i) - 1 << ", ";
-  // }
-  // std::cout << std::endl;
-
-  // std::cout << "ISTLU" << std::endl;
-  // for (int i = 1; i < sk::NST; ++i) {
-  //   std::cout << sk::ISTLU(i) - 1 << ", ";
-  // }
-  // std::cout << std::endl;
-
-  // std::cout << "ILUST" << std::endl;
-  // for (int i = 1; i < sk::NLU; ++i) {
-  //   std::cout << sk::ILUST(i) - 1 << ", ";
-  // }
-  // std::cout << std::endl;
-
-  // std::cout << "ISTSH" << std::endl;
-  // for (int i = 1; i < sk::NST; ++i) {
-  //   std::cout << sk::ISTSH(i) - 1 << ", ";
-  // }
-  // std::cout << std::endl;
-
-  // std::cout << "ISHST" << std::endl;
-  // for (int i = 1; i < sk::NSH; ++i) {
-  //   std::cout << sk::ISHST(i) - 1 << ", ";
-  // }
-  // std::cout << std::endl;
-
-  // std::cout << "ILUSH" << std::endl;
-  // for (int i = 1; i < sk::NLU; ++i) {
-  //   std::cout << sk::ILUSH(i) - 1 << ", ";
-  // }
-  // std::cout << std::endl;
-
-  // std::cout << "ISHLU" << std::endl;
-  // for (int i = 1; i < sk::NSH; ++i) {
-  //   std::cout << sk::ISHLU(i) - 1 << ", ";
-  // }
-  // std::cout << std::endl;
-
-
-  // std::cout << "lvpart: " << sk::LVPART << std::endl;
-  // std::cout << "mtrack: " << sk::MTRACK << std::endl;
-
   *nSimPart_ = sk::NVECMC;
   fillVector(SimPart_fourMomentum_, sk::MTRACK + sk::LVPART, sk::NVECMC, [](int i)
   { return XYZTVectorF(sk::VECP(1, i), sk::VECP(2, i), sk::VECP(3, i), sk::VECP(4, i)); });
@@ -830,8 +842,168 @@ void NanoAODWriter::fillHadid()
     }
 }
 
+void NanoAODWriter::fillPartLoop(particleData& pData,
+                                 eventData& eData,
+                                 bool gen) {
+    int nParticle = 0;
+    int nParticleHP = 0;
+    int nChargedParticle = 0;
+    int nChargedParticleHP = 0;
+    TVector3 netP(0, 0, 0);
+    TVector3 netChargedP(0, 0, 0);
+    TVector3 netPGen(0, 0, 0);
+    TVector3 netChargedPGen(0, 0, 0);
+    int nSize = (gen)? *nGenPart_ : *nPart_;
+    for (auto iSize = 0; iSize < nSize; ++iSize) {
+        bool pass = false;
+        // calculate charge
+        float q = 0;
+        if (gen) {
+            int status = sk::KP(iSize + 1, 1);
+            pass = (status == 1); // final state particle
+        } else {
+            ///// veto the beam background and other backgrounds /////
+            pass = !Part_lock_->at(iSize); // bad particle
+            ///// veto the beam background and other backgrounds /////
+        }
+        if (pass) {
+            // FORTRAN index starts with 1
+            int i = nParticle + 1;
+            XYZTVectorF temp;
+            if (gen) {
+                temp = GenPart_fourMomentum_->at(nParticle);
+                int pdgid = sk::KP(i, 2);
+                TParticlePDG* particle = pdgDatabase->GetParticle(pdgid);
+                q = particle->Charge() / 3.0;
+                pData.pid[nParticle] = pdgid;
+                pData.pwflag[nParticle] = -1;
+            } else {
+                q = Part_charge_->at(nParticle);
+                temp = Part_fourMomentum_->at(nParticle);
+                lock[nParticle] = Part_lock_->at(nParticle);
+                // LEPTON ID with standard MUID and ELID
+                if (Part_charge_->at(nParticle) == 0) {
+                    pData.pwflag[nParticle] = 4;
+                } else if (sk::KMUID(1, i) & (1 << 2)) {
+                    pData.pwflag[nParticle] = 2;
+                } else if (sk::KELID(1, i) >= 3) {
+                    pData.pwflag[nParticle] = 1;
+                } else {
+                    pData.pwflag[nParticle] = 0;
+                }
+                pData.ntpc[nParticle] = (pData.charge[nParticle]!=0)? 7: 0;
+                pData.d0[nParticle] = sk::QTRAC(4, i);
+                pData.z0[nParticle] = sk::QTRAC(5, i);
+                // use this variable to store track length for DELPHI
+                pData.weight[nParticle] = sk::QTRAC(24, i);
+            }
+            netP -= TVector3(temp.x(), temp.y(), temp.z());
+            if (abs(q) > 0.5) {
+                netChargedP -= TVector3(temp.x(), temp.y(), temp.z());
+            }
+
+            pData.px[nParticle] = temp.x();
+            pData.py[nParticle] = temp.y();
+            pData.pz[nParticle] = temp.z();
+            emf[nParticle] = sk::QEMF(8,i);
+            hpc[nParticle] = sk::QHPC(8,i);
+            hac[nParticle] = sk::QHAC(8,i);
+            stic[nParticle] = sk::QSTIC(1,i);
+            pData.pt[nParticle] = temp.Pt();
+            pData.pmag[nParticle]   = temp.P();
+            pData.rap[nParticle]    = temp.Rapidity();
+            pData.eta[nParticle]    = temp.Eta();
+            pData.theta[nParticle]  = temp.Theta();
+            pData.phi[nParticle]    = temp.Phi();
+            pData.mass[nParticle]   = temp.M();
+            pData.charge[nParticle] = q;
+
+
+            // follow the same definition in eventSelection.h
+            if (pData.pwflag[nParticle]<=2) {
+                pData.highPurity[nParticle]= pData.pwflag[nParticle]<=2 && temp.Pt() >= 0.2;
+            } else if (pData.pwflag[nParticle]==4) {
+                pData.highPurity[nParticle]= pData.pwflag[nParticle]==4 && temp.Pt() >= 0.4;
+            }
+
+            if(pData.pwflag[nParticle]<=2) {
+                nChargedParticle++;
+                if (pData.highPurity[nParticle]) nChargedParticleHP++;
+            }
+            if (pData.highPurity[nParticle]) nParticleHP++;
+            ++nParticle;
+        }
+    }
+    pData.nParticle         = nParticle;
+    eData.nChargedParticle  = nChargedParticle;
+    eData.nParticleHP       = nParticleHP;
+    eData.nChargedParticleHP= nChargedParticleHP;
+
+    eData.missP = netP.Mag();
+    eData.missPt = netP.Perp();
+    eData.missTheta = netP.Theta();
+    eData.missPhi = netP.Phi();
+
+		eData.missChargedP = netChargedP.Mag();
+		eData.missChargedPt = netChargedP.Perp();
+		eData.missChargedTheta = netChargedP.Theta();
+		eData.missChargedPhi = netChargedP.Phi();
+
+}
+
+
+void NanoAODWriter::fillSelection(particleData& pData,
+                                  eventData& eData) {
+    TVector3 thrust             = getThrust(pData.nParticle, pData.px, pData.py, pData.pz, THRUST::OPTIMAL);
+    TVector3 thrustWithMissP    = getThrust(pData.nParticle, pData.px, pData.py, pData.pz, THRUST::OPTIMAL,false,false,NULL,true,pData.pwflag);
+
+    eData.Thrust        = thrust.Mag();
+    eData.TTheta        = thrust.Theta();
+    eData.TPhi          = thrust.Phi();
+    eData.ThrustWithMissP   = thrustWithMissP.Mag();
+    eData.TThetaWithMissP   = thrustWithMissP.Theta();
+    eData.TPhiWithMissP     = thrustWithMissP.Phi();
+    if ( do_thrustMissP ) {
+        setThrustVariables(&pData, &eData, TVector3(),
+                           TVector3(), TVector3(), TVector3(), TVector3(),
+                           thrustWithMissP);
+    }
+
+    Sphericity spher = Sphericity(pData.nParticle,
+                        pData.px,
+                        pData.py,
+                        pData.pz,
+                        pData.pwflag,
+                        false);
+    spher.setTree(&eData);
+
+    eventSelection eSelection;
+    eSelection.setEventSelection(&pData, &eData);
+
+    eData.passesTotalChgEnergyMin = eSelection.getPassesTotalChgEnergyMin();
+    eData.passesNeuNch = eSelection.getPassesNeuNch();
+    eData.passesNTrkMin = eSelection.getPassesNTrkMin();
+    eData.passesSTheta = eSelection.getPassesSTheta();
+    eData.passesBELLE = eSelection.getPassesNeuNch() && \
+        eSelection.getPassesSTheta() &&			\
+        eSelection.getPassesTotalChgEnergyMin() &&		\
+        eSelection.getPassesNTrkMin();
+    eData.passesISR = eSelection.getPassesISR();
+    eData.passesWW = eSelection.getPassesWW();
+    eData.Mvis = eSelection.getMvis();
+    eData.sPrime = eSelection.getsPrime();
+    eData.d2 = eSelection.getd2();
+    eData.cW = eSelection.getcW();
+}
+
+
 void NanoAODWriter::user99()
 {
     // std::cout << "NanoAODWriter::user99: Finalising" << std::endl;
+    file_->cd();
+    out_t->Write();
+    out_tgen->Write();
     writer_.reset();
+
+    file_->Close();
 };

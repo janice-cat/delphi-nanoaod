@@ -23,6 +23,7 @@
 #include "skelana/pscdex.hpp"
 #include "skelana/pscgrc.hpp"
 #include "skelana/psclrc.hpp"
-#include "skelana/pscbtg.hpp"   
+#include "skelana/pscbtg.hpp"
+#include "skelana/pscemf_hpc_hac_stic.hpp"
 
 #endif // SKELANA_HPP

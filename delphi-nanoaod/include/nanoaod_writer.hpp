@@ -15,6 +15,18 @@
 #include <Math/SMatrixFfwd.h>
 #include <Math/SVector.h>
 
+#include <TTree.h>
+#include <TFile.h>
+#include <TDatabasePDG.h>
+#include <TParticlePDG.h>
+
+//DataProcessing dependencies
+#include "DataProcessing/include/particleData.h"
+#include "DataProcessing/include/eventSelection.h"
+#include "DataProcessing/include/eventData.h"
+#include "DataProcessing/include/thrustTools.h"
+#include "DataProcessing/include/sphericityTools.h"
+
 using RNTupleWriter = ROOT::Experimental::RNTupleWriter;
 using RNTupleModel = ROOT::Experimental::RNTupleModel;
 
@@ -76,10 +88,30 @@ private:
     void fillHadid();
     void defineBtag(std::unique_ptr<RNTupleModel> &model);
     void fillBtag();
+    void fillPartLoop(particleData& pData, eventData& eData, bool gen = false);
+    void fillSelection(particleData& pData, eventData& eData);
 
     std::filesystem::path output_;
     std::unique_ptr<RNTupleWriter> writer_;
     bool mc_;
+
+    // Create a TTree to store event-based data
+    TFile* file_ = nullptr;
+    TTree* out_t = nullptr;
+    particleData    out_pData;
+    eventData       out_eData;
+
+    TTree* out_tgen = nullptr;
+    particleData    out_pData_gen;
+    eventData       out_eData_gen;
+
+    // Variables for event information and particle data
+    float emf[particleData::nMaxPart];
+    float hpc[particleData::nMaxPart];
+    float hac[particleData::nMaxPart];
+    float stic[particleData::nMaxPart];
+    float lock[particleData::nMaxPart];
+    TDatabasePDG* pdgDatabase = nullptr;
 
     std::shared_ptr<int> Event_runNumber_;
     std::shared_ptr<int> Event_eventNumber_;
