@@ -35,31 +35,34 @@ void treefy(const char* infile = "test.root",
         }
     }
 
-    // Write dict.h
-    std::ofstream fout("dict.h");
-    fout << "#include \"ROOT/RVec.hxx\"\n";
-    fout << "#include \"Math/Vector4D.h\"\n";
-    fout << "#include \"Math/GenVector/DisplacementVector3D.h\"\n";
-    fout << "#include \"Math/GenVector/Cartesian3D.h\"\n";
-    fout << "#include \"Math/GenVector/PositionVector3D.h\"\n";
-    fout << "#include \"Math/GenVector/VectorUtil.h\"\n";
-    fout << "#include \"Math/SVector.h\"\n";
-    fout << "#include \"Math/SMatrix.h\"\n";
-    fout << "#ifdef __CLING__\n";
-    for (const auto& cls : classes) {
+    if (gSystem->AccessPathName("dict.so")) {
+      std::cout << "Building dict" << std::endl;
+      // Write dict.h
+      std::ofstream fout("dict.h");
+      fout << "#include \"ROOT/RVec.hxx\"\n";
+      fout << "#include \"Math/Vector4D.h\"\n";
+      fout << "#include \"Math/GenVector/DisplacementVector3D.h\"\n";
+      fout << "#include \"Math/GenVector/Cartesian3D.h\"\n";
+      fout << "#include \"Math/GenVector/PositionVector3D.h\"\n";
+      fout << "#include \"Math/GenVector/VectorUtil.h\"\n";
+      fout << "#include \"Math/SVector.h\"\n";
+      fout << "#include \"Math/SMatrix.h\"\n";
+      fout << "#ifdef __CLING__\n";
+      for (const auto& cls : classes) {
         fout << "#pragma link C++ class " << cls << "+;\n";
-    }
-    fout << "#endif\n";
-    fout.close();
+      }
+      fout << "#endif\n";
+      fout.close();
 
-    // Build dictionary
-    gSystem->Exec("rootcling -f dict.cxx -c dict.h");
-    gSystem->Exec("g++ -shared -fPIC $(root-config --cflags --libs) dict.cxx -o dict.so");
+      // Build dictionary
+      gSystem->Exec("rootcling -f dict.cxx -c dict.h");
+      gSystem->Exec("g++ -shared -fPIC $(root-config --cflags --libs) dict.cxx -o dict.so");
+    }
     gSystem->Load("dict.so");
 
     // Select columns
     std::vector<std::string> filtered;
-    std::regex part_pattern("^Part_fourMomentum");
+    // std::regex part_pattern("^Part_fourMomentum");
     std::vector<std::string> bad_types = {"Event_shortDstVersion", "Trac", "Vtx"};
 
     for (auto&& col : colNames) {

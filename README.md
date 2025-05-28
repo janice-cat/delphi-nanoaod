@@ -1,3 +1,12 @@
+# on SVMIT03
+
+```bash
+# DELPHI Software environment
+source setup.sh
+# produce a small sample and convert to TTree
+python3 python/run.py
+```
+
 # DELPHI NanoAOD
 
 TThe DELPHI NanoAOD is built on the DELPHI [SKELANA Analysis Framework](https://opendata-qa.cern.ch/record/80502), written in Fortran. SKELANA processes data from the DELPHI Full, Short, and XShort DST formats, storing extracted information in COMMON blocks for further analysis. Various DELPHI analysis programs are integrated, allowing users to control data processing and re-execute selected algorithms to study the impact of parameter adjustments and fine-tuning.
