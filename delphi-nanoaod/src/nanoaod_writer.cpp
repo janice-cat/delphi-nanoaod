@@ -884,10 +884,12 @@ void NanoAODWriter::fillPartLoop(particleData& pData,
                 // LEPTON ID with standard MUID and ELID
                 if (Part_charge_->at(nParticle) == 0) {
                     pData.pwflag[nParticle] = 4;
+                // standard muon selection (3rd bit from the right)
                 } else if (sk::KMUID(1, i) & (1 << 2)) {
-                    pData.pwflag[nParticle] = 2;
-                } else if (sk::KELID(1, i) >= 3) {
                     pData.pwflag[nParticle] = 1;
+                // standard electron selection
+                } else if (sk::KELID(1, i) >= 4) {
+                    pData.pwflag[nParticle] = 2;
                 } else {
                     pData.pwflag[nParticle] = 0;
                 }
