@@ -448,11 +448,11 @@ void NanoAODWriter::fillGenPart()
     fillVector(GenPart_pdgId_, 1, sk::NP, [](int i)
                { return sk::KP(i, 2); });
     fillVector(GenPart_parentIdx_, 1, sk::NP, [](int i)
-               { return sk::KP(i, 3); });
+               { return sk::KP(i, 3) - 1; });
     fillVector(GenPart_firstChildIdx_, 1, sk::NP, [](int i)
-               { return sk::KP(i, 4); });
+               { return sk::KP(i, 4) - 1; });
     fillVector(GenPart_lastChildIdx_, 1, sk::NP, [](int i)
-               { return sk::KP(i, 5); });
+               { return sk::KP(i, 5) - 1; });
     fillVector(GenPart_fourMomentum_, 1, sk::NP, [](int i)
                { return XYZTVectorF(sk::PP(i, 1), sk::PP(i, 2), sk::PP(i, 3), sk::PP(i, 4)); });
     fillVector(GenPart_fourPosition_, 1, sk::NP, [](int i)
