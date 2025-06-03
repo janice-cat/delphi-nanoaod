@@ -883,6 +883,13 @@ void NanoAODWriter::fillPartLoop(particleData& pData,
                 }
                 pData.pid[nParticle] = pdgid;
                 pData.pwflag[nParticle] = -1;
+                pData.highPurity[nParticle]= -1;
+
+                nParticleHP++;
+                if (abs(q) > 0.5) {
+                    nChargedParticle++;
+                    nChargedParticleHP++;
+                }
             } else {
                 q = Part_charge_->at(iSize);
                 temp = Part_fourMomentum_->at(iSize);
@@ -899,11 +906,28 @@ void NanoAODWriter::fillPartLoop(particleData& pData,
                 } else {
                     pData.pwflag[nParticle] = 0;
                 }
+                // TODO: use vdHits?
                 pData.ntpc[nParticle] = (pData.charge[nParticle]!=0)? 7: 0;
                 pData.d0[nParticle] = sk::QTRAC(4, i);
                 pData.z0[nParticle] = sk::QTRAC(5, i);
                 // use this variable to store track length for DELPHI
                 pData.weight[nParticle] = sk::QTRAC(24, i);
+
+                // below we follow the same definition in eventSelection.h
+                // TODO: Use DELPHI selections
+                if (pData.pwflag[nParticle]<=2) {
+                    pData.highPurity[nParticle]= pData.pwflag[nParticle]<=2 && temp.Pt() >= 0.2;
+                } else if (pData.pwflag[nParticle]==4) {
+                    pData.highPurity[nParticle]= pData.pwflag[nParticle]==4 && temp.Pt() >= 0.4;
+                }
+
+                if(pData.pwflag[nParticle]<=2) {
+                    nChargedParticle++;
+                    if (pData.highPurity[nParticle]) nChargedParticleHP++;
+                }
+                if (pData.highPurity[nParticle]) {
+                    nParticleHP++;
+                }
             }
             netP -= TVector3(temp.x(), temp.y(), temp.z());
             if (abs(q) > 0.5) {
@@ -927,18 +951,6 @@ void NanoAODWriter::fillPartLoop(particleData& pData,
             pData.charge[nParticle] = q;
 
 
-            // follow the same definition in eventSelection.h
-            if (pData.pwflag[nParticle]<=2) {
-                pData.highPurity[nParticle]= pData.pwflag[nParticle]<=2 && temp.Pt() >= 0.2;
-            } else if (pData.pwflag[nParticle]==4) {
-                pData.highPurity[nParticle]= pData.pwflag[nParticle]==4 && temp.Pt() >= 0.4;
-            }
-
-            if(pData.pwflag[nParticle]<=2) {
-                nChargedParticle++;
-                if (pData.highPurity[nParticle]) nChargedParticleHP++;
-            }
-            if (pData.highPurity[nParticle]) nParticleHP++;
             ++nParticle;
         }
     }
