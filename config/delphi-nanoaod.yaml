@@ -90,17 +90,22 @@ skelana_cuts:
 #   April 99 tuning for 98 data
       TRKMOM3: 0.1
       TRKLEN3: 30.
-      TRKRPH3: 4.
-      TRKZET3: 4.
-      TRCCOS3: 0.94
+      # TRKRPH3: 4.
+      TRKRPH3: 10.
+      # TRKZET3: 4.
+      TRKZET3: 10.
+      # TRCCOS3: 0.94
+      TRCCOS3: 1.
       TRKMAX3: 1.5
       TRKERR3: 1.
-      TRNCOS3: 0.98
+      # TRNCOS3: 0.98
+      TRNCOS3: 1.
       EHPC3:   0.3
       EFEMC3:  0.4
       EHAC3:   0.
       ESTIC3:  0.3
       RECCAL3: 5.0
+
 skelana_intcuts:
       VDONLY1: 0
       IDVDWZ1: 0
