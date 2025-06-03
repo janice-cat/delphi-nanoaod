@@ -110,7 +110,7 @@ private:
     float hpc[particleData::nMaxPart];
     float hac[particleData::nMaxPart];
     float stic[particleData::nMaxPart];
-    float lock[particleData::nMaxPart];
+    int lock[particleData::nMaxPart];
     TDatabasePDG* pdgDatabase = nullptr;
 
     std::shared_ptr<int> Event_runNumber_;

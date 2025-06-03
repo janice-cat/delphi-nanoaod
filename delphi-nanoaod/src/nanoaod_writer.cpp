@@ -116,11 +116,6 @@ void NanoAODWriter::user00()
     out_t->SetDirectory(file_);
     out_tgen->SetDirectory(file_);
 
-    out_t->Branch("EMF", emf, "EMF[nParticle]");
-    out_t->Branch("HPC", hpc, "HPC[nParticle]");
-    out_t->Branch("HAC", hac, "HAC[nParticle]");
-    out_t->Branch("STIC", stic, "STIC[nParticle]");
-    out_t->Branch("LOCK", lock, "LOCK[nParticle]");
 
     // register branches
     do_chThrust           = false;
@@ -133,6 +128,12 @@ void NanoAODWriter::user00()
 
     out_pData_gen.SetBranchWrite(out_tgen, 1);
     out_eData_gen.SetBranchWrite(out_tgen, 0);
+
+    out_t->Branch("EMF", emf, "EMF[nParticle]/F");
+    out_t->Branch("HPC", hpc, "HPC[nParticle]/F");
+    out_t->Branch("HAC", hac, "HAC[nParticle]/F");
+    out_t->Branch("STIC", stic, "STIC[nParticle]/F");
+    out_t->Branch("LOCK", lock, "LOCK[nParticle]/I");
 
     pdgDatabase = TDatabasePDG::Instance();
 };
