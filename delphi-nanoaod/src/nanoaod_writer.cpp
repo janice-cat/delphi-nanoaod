@@ -439,6 +439,7 @@ void NanoAODWriter::defineGenPart(std::unique_ptr<RNTupleModel> &model)
     MakeField(model, "GenPart_vertex", "Generated particle 4-position", GenPart_fourPosition_);
     MakeField(model, "GenPart_tau", "Generated particle lifetime", GenPart_tau_);
     MakeField(model, "GenPart_simIdx", "Generated particle simulation index", GenPart_simIdx_);
+    MakeField(model, "GenPart_mass", "Generated particle mass", GenPart_mass_);
 }
 
 void NanoAODWriter::fillGenPart()
@@ -462,6 +463,10 @@ void NanoAODWriter::fillGenPart()
                { return sk::VP(i, 5); });
     fillVector(GenPart_simIdx_, 1, sk::NP, [](int i)
                { return sk::ISHST(i) - 1; });
+
+    fillVector(GenPart_mass_, 1, sk::NP, [](int i)
+    { return sk::PP(i, 5) - 1; });
+
 }
 
 void NanoAODWriter::defineSimVtx(std::unique_ptr<RNTupleModel> &model)
