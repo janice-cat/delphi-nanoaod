@@ -33,12 +33,15 @@ def run(nn):
     top = f'/data/DELPHI/{out_top}_data/{year}/{nn}'
     os.makedirs(top, exist_ok=True)
     output = f"{top}_evt{nevt}.root" if nevt > 0 else f"{top}.root"
-    execution = f"{exe} --nickname {nn} --mc --config config/delphi-nanoaod.yaml --output {output}"
+    execution = f"../{exe} --nickname {nn} --mc --config ../config/delphi-nanoaod.yaml --output {output}"
     if nevt > 0:
         execution += f" -m {nevt}"
     print(execution)
-    os.system(execution + f" |& tee {top}.log")
+    os.makedirs(nn, exist_ok=True)
+    os.chdir(nn)
+    os.system(execution + f" |& tee {nn}.log")
     os.system(f"""root -q -b -l scripts/treefy.C+'("{output}")'""")
+    os.chdir("..")
 
 if __name__ == "__main__":
     if len(sys.argv) > 1 and sys.argv[1] == "debug":
