@@ -5,18 +5,26 @@ import sys
 import subprocess
 import multiprocessing
 
-fatmen = [
-    "xs_wphact24cc_e182.7_m80.4_c97_1l_g1",
-    "xs_wphact211ncgg_e182.7_m80.4_c97_1l_g1",
-    "xs_wphact21nc4f_e182.7_m80.4_c97_1l_g1",
-    "xs_qedbk23eegg_e183.5_l97_1l_g1",
-    "xs_gpym6143wc0eeqq_e182.7_c97_1l_g1",
-    "xs_qedbk23eegg_e183.5_l97_1l_g1",
-    "xs_kk2f4143qq_e182.7_l97_1l_g1",
-    "xs_kk2f4144tthl_e182.7_r97_1l_g1",
-    "xs_kk2f4143mumu_e182.7_l97_1l_g1",
-]
 
+# fatfind -N "xs_[^h].*e18.*98.*e1"
+env = os.environ.copy()
+result = subprocess.run(['fatfind', '-N', r'xs_[^h].*e18.*98.*e1'],
+                        stdout=subprocess.PIPE, env=env, text=True)
+fatmen = result.stdout.splitlines()
+# fatmen = [
+#     # "xs_wphact24cc_e182.7_m80.4_c97_1l_g1",
+#     # "xs_wphact211ncgg_e182.7_m80.4_c97_1l_g1",
+#     # "xs_wphact21nc4f_e182.7_m80.4_c97_1l_g1",
+#     # "xs_qedbk23eegg_e183.5_l97_1l_g1",
+#     # "xs_gpym6143wc0eeqq_e182.7_c97_1l_g1",
+#     # "xs_qedbk23eegg_e183.5_l97_1l_g1",
+#     # "xs_kk2f4143qq_e182.7_l97_1l_g1",
+#     # "xs_kk2f4144tthl_e182.7_r97_1l_g1",
+#     # "xs_kk2f4143mumu_e182.7_l97_1l_g1",
+#     # "xsdst97_e183_g2",
+# ]
+
+fatmen += ['xsdst98_e1']
 
 nevt = 0
 
@@ -27,9 +35,8 @@ def infer_year(yeartype):
     return None
 
 def run(nn):
-    # out_top = "simulation" if suffix == "MC" else "collision"
+    out_top = "simulation" if nn[2] == '_' else 'collision'
     year = infer_year(nn)
-    out_top = "simulation"
     top = f'/data/DELPHI/{out_top}_data/{year}/{nn}'
     os.makedirs(top, exist_ok=True)
     output = f"{top}_evt{nevt}.root" if nevt > 0 else f"{top}.root"
@@ -40,8 +47,8 @@ def run(nn):
     os.makedirs(nn, exist_ok=True)
     os.chdir(nn)
     os.system(execution + f" |& tee {nn}.log")
-    os.system(f"""root -q -b -l scripts/treefy.C+'("{output}")'""")
     os.chdir("..")
+    os.system(f"""root -q -b -l scripts/treefy.C+'("{output}")'""")
 
 if __name__ == "__main__":
     if len(sys.argv) > 1 and sys.argv[1] == "debug":
