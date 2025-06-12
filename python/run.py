@@ -6,25 +6,18 @@ import subprocess
 import multiprocessing
 
 
-# fatfind -N "xs_[^h].*e18.*98.*e1"
+
+sim99 = "xs_(wphact21nc4f|wphact24cc|kk2f4143qq_|kk2f4144tthl|qedbk23eegg).*(e1|e2).*99.*e1"
+data99 = "xsdst99_e1"
+
+sim98 = r'xs_[^h].*e18.*98.*e1'
+data98 = 'xsdst98_e1'
+
 env = os.environ.copy()
-result = subprocess.run(['fatfind', '-N', r'xs_[^h].*e18.*98.*e1'],
+result = subprocess.run(['fatfind', '-N', sim98],
                         stdout=subprocess.PIPE, env=env, text=True)
 fatmen = result.stdout.splitlines()
-# fatmen = [
-#     # "xs_wphact24cc_e182.7_m80.4_c97_1l_g1",
-#     # "xs_wphact211ncgg_e182.7_m80.4_c97_1l_g1",
-#     # "xs_wphact21nc4f_e182.7_m80.4_c97_1l_g1",
-#     # "xs_qedbk23eegg_e183.5_l97_1l_g1",
-#     # "xs_gpym6143wc0eeqq_e182.7_c97_1l_g1",
-#     # "xs_qedbk23eegg_e183.5_l97_1l_g1",
-#     # "xs_kk2f4143qq_e182.7_l97_1l_g1",
-#     # "xs_kk2f4144tthl_e182.7_r97_1l_g1",
-#     # "xs_kk2f4143mumu_e182.7_l97_1l_g1",
-#     # "xsdst97_e183_g2",
-# ]
-
-fatmen += ['xsdst98_e1']
+fatmen += [data98]
 
 nevt = 0
 
@@ -37,7 +30,7 @@ def infer_year(yeartype):
 def run(nn):
     out_top = "simulation" if nn[2] == '_' else 'collision'
     year = infer_year(nn)
-    top = f'/data/DELPHI/{out_top}_data/{year}/{nn}'
+    top = f'/data00/DELPHI/{out_top}_data/{year}/{nn}'
     os.makedirs(top, exist_ok=True)
     output = f"{top}_evt{nevt}.root" if nevt > 0 else f"{top}.root"
     execution = f"../{exe} --nickname {nn} --mc --config ../config/delphi-nanoaod.yaml --output {output}"
@@ -60,5 +53,5 @@ if __name__ == "__main__":
     os.system("source setup.sh")
     os.system(f"cmake -B {build_dir}")
     os.system(f"cmake --build {build_dir}")
-    with multiprocessing.Pool(processes=20) as pool:  # adjust the number of processes as needed
+    with multiprocessing.Pool(processes=15) as pool:  # adjust the number of processes as needed
         pool.map(run, fatmen)
