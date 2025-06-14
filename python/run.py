@@ -18,19 +18,32 @@ data98 = 'xsdst98_e1'
 
 data97 = ['xsdst97_e183_g1', 'xsdst97_e183_g2']
 
+data96 = "xsdst96_.*g.*"
+sim96 = "xs_.*e1.*c96.*g.*"
+
 env = os.environ.copy()
-result = subprocess.run(['fatfind', '-N', sima0],
+result = subprocess.run(['fatfind', '-N', sim96],
                         stdout=subprocess.PIPE, env=env, text=True)
+
 fatmen = result.stdout.splitlines()
-fatmen_data = dataa0 + [data99, data98] + data97
+# fatmen_data = dataa0 + [data99, data98] + data97
+
+# result = subprocess.run(['fatfind', '-N', data96],
+#                         stdout=subprocess.PIPE, env=env, text=True)
+# fatmen_data = result.stdout.splitlines()
+# print(fatmen_data)
+fatmen_data = ['xsdst98_d2']
 
 nevt = 0
 
 def infer_year(yeartype):
     """Infers the year from the yeartype string."""
-    if '9' in yeartype:
-        return '19' + yeartype[yeartype.find('9'):yeartype.find('9') + 2]
-    elif 'a0' in yeartype:
+    for nine_str in ['r9', 'c9']:
+        if nine_str in yeartype:
+            return '19' + yeartype[yeartype.find(nine_str) + 1:yeartype.find(nine_str) + 3]
+    elif 'st9' in yeartype:
+        return '19' + yeartype[yeartype.find('st9') + 2:yeartype.find('st9') + 4]
+    elif 'a0' in yeartype or '00' in yeartype:
         return '2000'
     return None
 
@@ -46,7 +59,7 @@ def run(nn, data=False, dryrun=False):
     if not data:
         execution += ' --mc'
     print(execution)
-    os.makedirs(nn, exist_ok=True)
+    # os.makedirs(nn, exist_ok=True)
     if not dryrun:
         os.chdir(nn)
         os.system(execution + f" |& tee {nn}.log")
@@ -66,5 +79,5 @@ if __name__ == "__main__":
     os.system(f"cmake -B {build_dir}")
     os.system(f"cmake --build {build_dir}")
     with multiprocessing.Pool(processes=20) as pool:  # adjust the number of processes as needed
-        pool.map(partial(run, data=True), fatmen_data)
-        pool.map(partial(run, data=False), fatmen)
+        pool.map(partial(run, data=True, dryrun=False), fatmen_data)
+        pool.map(partial(run, data=False, dryrun=False), fatmen)
