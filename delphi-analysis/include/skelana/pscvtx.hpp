@@ -43,14 +43,15 @@ namespace skelana
     {
         int nvtx;
         int nvtxmc;
-        int kvtx[2 * NVTXMX][LENVTX];
+        int lvtx[2*NVTXMX];
+        int kvtx[LENVTX * 2 * NVTXMX];
     } pscvtx_;
 
     inline int &NVTX = pscvtx_.nvtx;
     inline int &NVTXMC = pscvtx_.nvtxmc;
-    inline int &KVTX(int i, int j) { return pscvtx_.kvtx[j - 1][i - 1]; }
-    inline float &QVTX(int i, int j) { return *reinterpret_cast<float *>(&pscvtx_.kvtx[j - 1][i - 1]); }
-
+    inline int& LVTX(int j) {return pscvtx_.lvtx[j-1];}
+    inline int& KVTX(int i, int j) {return pscvtx_.kvtx[(i-1) + LENVTX * (j-1)]; }
+    inline float& QVTX(int i, int j) {return *reinterpret_cast<float*>(&pscvtx_.kvtx[(i - 1) + LENVTX * (j - 1)]);}
 } // namespace skelana
 
 #endif // SKELANA_PSCVTX_HPP
