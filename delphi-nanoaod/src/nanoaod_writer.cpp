@@ -421,9 +421,9 @@ void NanoAODWriter::fillSimPart()
                { return sk::ISTPA(i) - 1; });
     fillVector(SimPart_genIdx_, sk::LVPART, sk::NVECMC, [](int i)
                { return sk::ISTSH(i) - 1; });
-    fillVector(SimPart_originVtxIdx_, sk::MTRACK + sk::LVPART, sk::NVECMC, [](int i)
+    fillVector(SimPart_originVtxIdx_, sk::LVPART, sk::NVECMC, [](int i)
                { return sk::ISTVX(1, i) - 1; });
-    fillVector(SimPart_decayVtxIdx_, sk::MTRACK + sk::LVPART, sk::NVECMC, [](int i)
+    fillVector(SimPart_decayVtxIdx_, sk::LVPART, sk::NVECMC, [](int i)
                { return sk::ISTVX(2, i) - 1; });
 }
 
