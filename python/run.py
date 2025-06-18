@@ -82,5 +82,5 @@ if __name__ == "__main__":
     os.system(f"cmake -B {build_dir}")
     os.system(f"cmake --build {build_dir}")
     with multiprocessing.Pool(processes=20) as pool:  # adjust the number of processes as needed
-        pool.map(partial(run, data=True, dryrun=1), fatmen_data)
-        pool.map(partial(run, data=False, dryrun=1), fatmen)
+        pool.map(partial(run, data=False, dryrun=False), fatmen)
+        pool.map(partial(run, data=True, dryrun=False), fatmen_data)
