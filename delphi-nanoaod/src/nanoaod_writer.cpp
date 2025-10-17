@@ -113,8 +113,8 @@ void NanoAODWriter::user00()
     // file_ = TFile::CurrentFile();
     // file_->cd();
     out_t = new TTree("t", "t");
-    out_tgen = new TTree("tgen", "tgen");
-    out_tsim = new TTree("tgenBefore", "tgenBefore");
+    out_tgen = new TTree("tgen_noSimPart", "tgen_noSimPart");
+    out_tsim = new TTree("tgen", "tgen");
     out_t->SetDirectory(file_);
     out_tgen->SetDirectory(file_);
     out_tsim->SetDirectory(file_);
@@ -920,8 +920,18 @@ void NanoAODWriter::fillPartLoop(particleData& pData,
                     q = -particle->Charge() / 3.0;
                 }
                 pData.pid[nParticle] = pdgid;
-                // for gen, use this var to store Lund status
-                pData.pwflag[nParticle] = (sk::KP(i, 1) == 1) ? 1 : 4; 
+                // [2PC analysis convention -- stemed from ALEPH]
+                // pwflag==0, charged tracks
+                // pwflag==1, muon
+                // pwflag==2, electron
+                // pwflag==3, V0
+                // pwflag==4, photons
+                // pwflag==5, neutral hadrons
+                pData.pwflag[nParticle] = (TMath::Abs(pdgid)==211 || TMath::Abs(pdgid)==321 || TMath::Abs(pdgid)==2212)? 0: // charged π K p
+                                          (TMath::Abs(pdgid)==13)? 1: // muon
+                                          (TMath::Abs(pdgid)==11)? 2: // electron
+                                          (TMath::Abs(pdgid)==310 || TMath::Abs(pdgid)==3122)? 3: // K_S0, Lambda
+                                          (pdgid==22)            ? 4: 5;
                 pData.highPurity[nParticle]= 1;
 
                 nParticleHP++;
@@ -932,9 +942,14 @@ void NanoAODWriter::fillPartLoop(particleData& pData,
             } else if (cat == DataKind::sim) {
                 temp = SimPart_fourMomentum_->at(iSize);
                 q = sk::VECP(7, sk::MTRACK+i);
-                pData.pid[nParticle] = sk::KP(sk::ISTSH(iSize+1), 2);
-                // store mass code. -- 2 for electron (only thing useful as of June 11 2025)
-                pData.pwflag[nParticle] = sk::VECP(8, sk::MTRACK+i);
+                int pdgid = SimPart_pdgId_->at(iSize);
+                pData.pid[nParticle] = pdgid;
+                // [2PC analysis convention -- stemed from ALEPH]
+                pData.pwflag[nParticle] = (TMath::Abs(pdgid)==211 || TMath::Abs(pdgid)==321 || TMath::Abs(pdgid)==2212)? 0: // charged π K p
+                                          (TMath::Abs(pdgid)==13)? 1: // muon
+                                          (TMath::Abs(pdgid)==11)? 2: // electron
+                                          (TMath::Abs(pdgid)==310 || TMath::Abs(pdgid)==3122)? 3: // K_S0, Lambda
+                                          (pdgid==22)            ? 4: 5;
                 pData.highPurity[nParticle]= 1;
                 nParticleHP++;
                 nChargedParticle++;
